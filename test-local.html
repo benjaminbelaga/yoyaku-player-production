@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOYAKU Player V4 Mobile - Test Local</title>
+    <style>
+        /* Reset basique */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #333;
+            color: white;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #444;
+            border-radius: 10px;
+            margin-bottom: 150px; /* Pour voir le player en bas */
+        }
+        
+        .test-info {
+            background: #222;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .breakpoint-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            z-index: 1000000;
+        }
+        
+        /* Simuler contenu page */
+        .fake-content {
+            height: 300px;
+            background: linear-gradient(45deg, #555, #777);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        
+        /* DEBUG: Grille pour voir layout */
+        .debug-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999998;
+            background-image: 
+                linear-gradient(rgba(255,0,0,0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,0,0,0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+            display: none;
+        }
+        
+        .debug-grid.active {
+            display: block;
+        }
+    </style>
+    
+    <!-- INCLURE LE CSS DU PLAYER -->
+    <link rel="stylesheet" href="yoyaku-player-v3-production/assets/css/frontend.css">
+</head>
+<body>
+    <!-- Info breakpoint -->
+    <div class="breakpoint-info">
+        <div>Largeur: <span id="width">0</span>px</div>
+        <div>Mode: <span id="mode">Desktop</span></div>
+        <div>Test: <span id="test-status">En cours...</span></div>
+    </div>
+    
+    <!-- Grille debug (toggle avec 'g') -->
+    <div class="debug-grid" id="debug-grid"></div>
+    
+    <div class="test-container">
+        <div class="test-info">
+            <h1>🎵 YOYAKU Player V4 Mobile - Test Local</h1>
+            <p><strong>Mission:</strong> Valider le layout mobile 2 lignes avec icônes SVG</p>
+            <p><strong>Breakpoint:</strong> Mobile ≤768px | Desktop >768px</p>
+            <p><strong>Controls:</strong> Redimensionner fenêtre pour tester responsive</p>
+            <p><strong>Debug:</strong> Appuyer 'G' pour toggle grille | 'D' pour debug mode</p>
+        </div>
+        
+        <div class="fake-content">
+            CONTENU SIMULÉ DE LA PAGE
+            <br>
+            <small>Le player sera en bas de page</small>
+        </div>
+        
+        <h2>Tests à valider:</h2>
+        <ul>
+            <li id="test-desktop">✅ Desktop (>768px): Layout horizontal, 48px hauteur</li>
+            <li id="test-mobile">⏳ Mobile (≤768px): Layout 2 lignes, 120px hauteur</li>
+            <li id="test-icons">⏳ Icônes: SVG circulaires (pas emoji)</li>
+            <li id="test-waveform">⏳ Waveform: Pleine largeur ligne 2 mobile</li>
+            <li id="test-vinyl">⏳ Vinyl: 45px, span 2 lignes mobile</li>
+            <li id="test-pitch">⏳ Pitch: Masqué mobile, visible desktop</li>
+        </ul>
+    </div>
+    
+    <!-- PLAYER HTML - Copié exact du plugin -->
+    <div class="yoyaku-player-ultra-fin active mobile-layout" id="yoyaku-player">
+        <div class="player-inner">
+            <!-- Vinyl Macaron -->
+            <div class="vinyl-cover">
+                <div class="vinyl-wrapper">
+                    <img class="vinyl-image" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%23333'/><circle cx='50' cy='50' r='20' fill='%23000'/><circle cx='50' cy='50' r='5' fill='%23666'/></svg>" alt="Test Vinyl">
+                </div>
+            </div>
+            
+            <!-- Playlist Container -->
+            <div class="playlist-container">
+                <div class="playlist-toggle">
+                    <div class="playlist-info">
+                        <div class="product-line-1">
+                            <span class="product-artist">Test Artist</span> - 
+                            <span class="product-title">Test Track Title</span>
+                        </div>
+                        <div class="product-line-2">
+                            <span class="product-label">Test Label</span> - 
+                            <span class="product-sku">TEST001</span>
+                        </div>
+                    </div>
+                    <div class="track-display">
+                        <span class="current-track">A: Test Track</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </div>
+                </div>
+                <div class="playlist-dropdown" style="display: none;"></div>
+            </div>
+            
+            <!-- Waveform -->
+            <div class="waveform-container">
+                <div id="waveform" style="background: linear-gradient(90deg, #ffd700 30%, #666 30%); height: 100%; border-radius: 10px; position: relative;">
+                    <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 12px; color: #000;">WAVEFORM SIMULÉ</div>
+                </div>
+            </div>
+            
+            <!-- Controls -->
+            <div class="player-controls">
+                <button class="control-btn prev" title="Previous">◄◄</button>
+                <button class="control-btn play-pause" title="Play/Pause">
+                    <span class="btn-play">▶</span>
+                    <span class="btn-pause" style="display:none">❚❚</span>
+                </button>
+                <button class="control-btn next" title="Next">►►</button>
+            </div>
+            
+            <!-- Audio Controls (volume/pitch) -->
+            <div class="audio-controls">
+                <div class="volume-icon" title="Volume">🔊</div>
+                <div class="pitch-icon" title="Pitch">⚡</div>
+            </div>
+            
+            <!-- Cart Button -->
+            <button class="cart-btn" title="Add to cart">🛒</button>
+        </div>
+    </div>
+    
+    <script>
+        // Mise à jour info breakpoint
+        function updateBreakpointInfo() {
+            const width = window.innerWidth;
+            const widthEl = document.getElementById('width');
+            const modeEl = document.getElementById('mode');
+            
+            widthEl.textContent = width;
+            modeEl.textContent = width <= 768 ? 'Mobile' : 'Desktop';
+            
+            // Auto-tests
+            runAutoTests(width);
+        }
+        
+        // Tests automatiques
+        function runAutoTests(width) {
+            const player = document.getElementById('yoyaku-player');
+            const playerStyle = getComputedStyle(player);
+            const playerInner = player.querySelector('.player-inner');
+            const innerStyle = getComputedStyle(playerInner);
+            
+            // Test desktop
+            if (width > 768) {
+                const isDesktopOk = playerStyle.height === '48px' && innerStyle.display === 'flex';
+                updateTestStatus('test-desktop', isDesktopOk);
+            }
+            
+            // Test mobile
+            if (width <= 768) {
+                const isMobileOk = playerStyle.height === '120px' && innerStyle.display === 'grid';
+                updateTestStatus('test-mobile', isMobileOk);
+                
+                // Test icônes SVG
+                const prevBtn = player.querySelector('.control-btn.prev');
+                const prevStyle = getComputedStyle(prevBtn, '::after');
+                const hasIcons = prevStyle.backgroundImage.includes('data:image/svg+xml');
+                updateTestStatus('test-icons', hasIcons);
+                
+                // Test waveform
+                const waveform = player.querySelector('.waveform-container');
+                const waveformStyle = getComputedStyle(waveform);
+                const isWaveformOk = waveformStyle.gridArea === 'waveform';
+                updateTestStatus('test-waveform', isWaveformOk);
+                
+                // Test vinyl
+                const vinyl = player.querySelector('.vinyl-cover');
+                const vinylStyle = getComputedStyle(vinyl);
+                const isVinylOk = vinylStyle.gridArea === 'vinyl';
+                updateTestStatus('test-vinyl', isVinylOk);
+                
+                // Test pitch masqué
+                const pitch = player.querySelector('.pitch-icon');
+                const pitchStyle = getComputedStyle(pitch);
+                const isPitchHidden = pitchStyle.display === 'none';
+                updateTestStatus('test-pitch', isPitchHidden);
+            }
+        }
+        
+        function updateTestStatus(testId, isOk) {
+            const el = document.getElementById(testId);
+            if (isOk) {
+                el.innerHTML = el.innerHTML.replace('⏳', '✅').replace('❌', '✅');
+                el.style.color = '#4CAF50';
+            } else {
+                el.innerHTML = el.innerHTML.replace('⏳', '❌').replace('✅', '❌');
+                el.style.color = '#f44336';
+            }
+        }
+        
+        // Event listeners
+        window.addEventListener('resize', updateBreakpointInfo);
+        window.addEventListener('load', updateBreakpointInfo);
+        
+        // Debug controls
+        document.addEventListener('keydown', (e) => {
+            if (e.key.toLowerCase() === 'g') {
+                document.getElementById('debug-grid').classList.toggle('active');
+            }
+            if (e.key.toLowerCase() === 'd') {
+                document.querySelector('.yoyaku-player-ultra-fin').classList.toggle('debug-mobile');
+            }
+        });
+        
+        // Simuler clicks boutons
+        document.querySelector('.btn-play').addEventListener('click', () => {
+            const play = document.querySelector('.btn-play');
+            const pause = document.querySelector('.btn-pause');
+            const vinyl = document.querySelector('.vinyl-wrapper');
+            
+            if (play.style.display !== 'none') {
+                play.style.display = 'none';
+                pause.style.display = 'block';
+                vinyl.classList.add('playing');
+            } else {
+                play.style.display = 'block';
+                pause.style.display = 'none';
+                vinyl.classList.remove('playing');
+            }
+        });
+        
+        document.querySelector('.btn-pause').addEventListener('click', () => {
+            const play = document.querySelector('.btn-play');
+            const pause = document.querySelector('.btn-pause');
+            const vinyl = document.querySelector('.vinyl-wrapper');
+            
+            play.style.display = 'block';
+            pause.style.display = 'none';
+            vinyl.classList.remove('playing');
+        });
+        
+        // Status global
+        setTimeout(() => {
+            const tests = document.querySelectorAll('[id^="test-"]');
+            const passed = [...tests].filter(t => t.innerHTML.includes('✅')).length;
+            const total = tests.length;
+            
+            document.getElementById('test-status').textContent = 
+                `${passed}/${total} tests passés`;
+            
+            if (passed === total) {
+                document.getElementById('test-status').style.color = '#4CAF50';
+                document.getElementById('test-status').textContent += ' 🎉 PARFAIT!';
+            }
+        }, 1000);
+    </script>
+</body>
+</html>

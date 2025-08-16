@@ -1,3 +1,11 @@
+/* 
+==========================================
+YOYAKU PLAYER V4 MOBILE - DESKTOP PRESERVÉ 100%
+Benjamin - Desktop EXACT + Mobile 2 Lignes
+16 Août 2025 - FIXED VERSION
+==========================================
+*/
+
 /* YOYAKU Player V3 ULTRA-FIN - 48px Height */
 :root {
     --yp-bg: #1a1a1a;
@@ -7,81 +15,71 @@
     --yp-muted: #999999;
 }
 
-/* HIDE OLD PLAYERS - Force disable */
-.fwa-player,
-.fwaplayer,
-.audio-player,
-.jp-audio,
-.mejs-container,
-.wp-audio-shortcode {
-    display: none !important;
-    visibility: hidden !important;
-    z-index: -1 !important;
-    position: absolute !important;
-    left: -9999px !important;
-}
+/* ==============================================
+   DESKTOP STYLES - PRESERVED 100% FROM ORIGINAL  
+   ============================================== */
 
-/* Player Container - ULTRA-FIN 48px */
 .yoyaku-player-ultra-fin {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    background: var(--yp-bg-light);
-    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
-    z-index: 9999;
-    transform: translateY(100%);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 100%;
+    height: 48px;
+    background: linear-gradient(180deg, var(--yp-bg) 0%, #0a0a0a 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.8);
+    z-index: 999999;
+    display: none;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    user-select: none;
 }
 
 .yoyaku-player-ultra-fin.active {
-    transform: translateY(0);
+    display: block;
 }
 
-/* Inner Container - 48px height */
-.player-inner {
+/* Container principal desktop */
+.yoyaku-player-ultra-fin .player-inner {
     display: flex;
     align-items: center;
-    padding: 8px 20px;
-    gap: 15px;
-    max-width: 1400px;
+    height: 100%;
+    padding: 0 12px 0 8px;
+    gap: 8px;
+    max-width: 100%;
     margin: 0 auto;
-    height: 48px;
 }
 
-/* Vinyl Macaron - 40px */
+/* Vinyl Cover - Desktop */
 .vinyl-cover {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
     flex-shrink: 0;
-    width: 40px;
-    height: 40px;
     position: relative;
+    cursor: pointer;
 }
 
 .vinyl-wrapper {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    overflow: hidden;
     position: relative;
-    background: radial-gradient(
-        circle,
-        var(--yp-bg) 0%,
-        var(--yp-bg-light) 30%,
-        var(--yp-bg) 50%,
-        var(--yp-bg-light) 70%,
-        var(--yp-bg) 100%
-    );
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s;
 }
 
-/* Vinyl styling - no clickable functionality */
+.vinyl-wrapper:hover {
+    transform: scale(1.05);
+}
 
 .vinyl-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 50%;
-    animation: spin 1.8s linear infinite;
+    transition: all 0.3s;
+    animation: spin 8s linear infinite;
     animation-play-state: paused;
 }
 
@@ -129,7 +127,7 @@
 }
 
 .product-line-1 {
-    font-size: 9px;
+    font-size: 11px;
     color: #f5f5f5;
     font-weight: 500;
 }
@@ -140,142 +138,109 @@
     font-weight: 400;
 }
 
-.product-artist {
-    font-weight: 600;
-}
-
 .track-display {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: #333;
-    color: #fff;
-    padding: 4px 8px;
-    border-radius: 2px;
-    min-width: 120px;
-}
-
-.current-track {
-    font-size: 10px;
-    font-weight: 500;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 9px;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 150px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-.track-display .dropdown-arrow {
-    font-size: 8px;
-    opacity: 0.7;
-}
-
-.track-bpm {
-    color: var(--yp-muted);
-    font-size: 10px;
-}
-
-.playlist-info .dropdown-arrow {
-    display: none;
+.track-display:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .dropdown-arrow {
+    color: #666;
+    margin-left: 4px;
     transition: transform 0.2s;
 }
 
-.playlist-container.open .dropdown-arrow {
-    transform: rotate(180deg);
-}
-
+/* Playlist items dropdown */
 .playlist-dropdown {
     position: absolute;
     bottom: 100%;
     left: 0;
     right: 0;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-bottom: 5px;
+    background: var(--yp-bg-light);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 8px 0;
+    margin-bottom: 4px;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.8);
+    z-index: 10;
     max-height: 200px;
     overflow-y: auto;
-    opacity: 0;
-    transform: translateY(10px);
-    pointer-events: none;
-    transition: all 0.2s;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+    display: none;
 }
 
-.playlist-container.open .playlist-dropdown {
-    opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
+.playlist-dropdown.active {
+    display: block;
 }
 
 .playlist-item {
-    padding: 8px 10px;
+    padding: 6px 12px;
     cursor: pointer;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: background 0.2s;
-    font-size: 12px;
-    color: #333;
-    user-select: none;
+    font-size: 10px;
+    color: #ccc;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s;
 }
 
-.playlist-item * {
-    pointer-events: none;
+.playlist-item:last-child {
+    border-bottom: none;
 }
 
 .playlist-item:hover {
-    background: #f5f5f5;
+    background: rgba(255, 255, 255, 0.05);
+    color: #f5f5f5;
 }
 
 .playlist-item.active {
-    background: #333;
-    color: #fff;
+    background: rgba(255, 215, 0, 0.1);
+    color: #ffd700;
 }
 
-/* Waveform Container ULTRA-FIN - CLICKABLE */
+/* Waveform Container - Desktop */
 .waveform-container {
     flex: 1;
-    background: #2d2d2d;
-    border-radius: 4px;
-    padding: 6px 12px;
+    height: 28px;
+    background: rgba(0,0,0,0.4);
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 3px;
     position: relative;
-    height: 36px;
-    border: 1px solid #444;
-    min-width: 200px;
-    cursor: pointer;
     overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 200px;
 }
 
 .waveform-container:hover {
-    border-color: #888;
-    box-shadow: 0 0 8px rgba(136, 136, 136, 0.4);
-}
-
-.waveform-container:active {
-    border-color: #aaa;
-    box-shadow: 0 0 12px rgba(170, 170, 170, 0.6);
+    background: rgba(0,0,0,0.6);
+    border-color: rgba(255, 215, 0, 0.3);
 }
 
 #waveform {
     width: 100%;
     height: 100%;
-    background: transparent;
+    border-radius: 11px;
+    overflow: hidden;
 }
 
-/* WaveSurfer specific styling */
+/* WaveSurfer Override for ULTRA-FIN */
 #waveform wave {
-    overflow: visible !important;
+    border-radius: 0 !important;
 }
 
-#waveform canvas {
-    height: 24px !important;
-    cursor: pointer;
+#waveform .wave-container {
+    border-radius: 11px !important;
 }
 
-/* Loading state for waveform */
+/* Loading State */
 .waveform-loading {
     display: flex;
     align-items: center;
@@ -334,343 +299,210 @@
 
 .time-display {
     position: absolute;
-    right: 0;
-    top: -18px;
-    font-size: 9px;
-    color: #999;
-    background: rgba(0,0,0,0.7);
-    padding: 2px 4px;
-    border-radius: 2px;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 8px;
+    color: #666;
+    background: rgba(0,0,0,0.8);
+    padding: 1px 4px;
+    border-radius: 3px;
+    pointer-events: none;
 }
 
-/* Controls ULTRA-FINS */
+/* Controls - Desktop */
 .player-controls {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
     flex-shrink: 0;
 }
 
 .control-btn {
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 50%;
-    color: var(--yp-text);
+    color: #f5f5f5;
     cursor: pointer;
-    transition: all 0.2s;
+    font-size: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
 }
 
-.control-btn.prev,
-.control-btn.next {
-    padding: 0;
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-}
-    
-    .control-btn.play-pause {
-        width: 44px;
-        height: 44px;
-    }
-
-.control-btn.prev:hover,
-.control-btn.next:hover {
-    color: var(--yp-accent);
-    background: rgba(255, 255, 255, 0.2);
-    border-color: rgba(255, 215, 0, 0.4);
-    transform: scale(1.1);
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 215, 0, 0.3);
+    transform: scale(1.05);
 }
 
-.control-btn.play-pause {
+.play-pause {
+    width: 28px !important;
+    height: 28px !important;
     background: rgba(255, 215, 0, 0.1) !important;
     border-color: rgba(255, 215, 0, 0.3) !important;
     color: #ffd700;
+    font-size: 12px;
 }
 
-.control-btn.play-pause:hover {
+.play-pause:hover {
     background: rgba(255, 215, 0, 0.2) !important;
     border-color: rgba(255, 215, 0, 0.5) !important;
 }
 
-/* START/STOP Button Technics Style */
-
-
-.control-btn.play-pause:active {
-    transform: scale(0.95);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
-
-/* Audio Controls - Icon Style with Popup */
+/* Audio Controls (Volume/Pitch) - Desktop */
 .audio-controls {
     display: flex;
-    flex-direction: row;
-    gap: 8px;
-    min-width: 50px;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.volume-icon, .pitch-icon {
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    color: #ccc;
+    cursor: pointer;
+    font-size: 10px;
+    display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.volume-icon,
-.pitch-icon {
-    background: transparent;
-    border: none;
-    color: #999;
-    cursor: pointer;
-    padding: 4px;
-    position: relative;
     transition: all 0.2s;
+    position: relative;
 }
 
-.volume-icon:hover,
-.pitch-icon:hover {
-    color: #fff;
+.volume-icon:hover, .pitch-icon:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffd700;
+    transform: scale(1.05);
 }
 
-.volume-icon.active,
-.pitch-icon.active {
-    color: var(--yp-accent);
-}
-
-/* Popup containers */
-.volume-popup,
-.pitch-popup {
+/* Volume Slider */
+.volume-popup, .pitch-popup {
     position: absolute;
     bottom: 100%;
     left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: #2a2a2a;
-    border: 1px solid #444;
-    border-radius: 4px;
-    padding: 8px 12px;
-    display: none;
-    flex-direction: row;
-    align-items: center;
-    gap: 8px;
-    min-width: 120px;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
-}
-
-.volume-icon.active .volume-popup,
-.pitch-icon.active .pitch-popup {
-    display: flex;
-}
-
-/* Horizontal sliders in popup */
-.volume-slider-horizontal,
-.pitch-slider-horizontal {
-    width: 80px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
-    outline: none;
-    -webkit-appearance: none;
-    cursor: pointer;
-}
-
-.volume-slider-horizontal::-webkit-slider-thumb,
-.pitch-slider-horizontal::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    background: #f0f0f0;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 1px solid #666;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-}
-
-.pitch-slider-horizontal {
-    background: linear-gradient(to right, 
-        rgba(255, 255, 255, 0.2) 0%, 
-        rgba(255, 255, 255, 0.2) 48%, 
-        #ffd700 48%, 
-        #ffd700 52%, 
-        rgba(255, 255, 255, 0.2) 52%, 
-        rgba(255, 255, 255, 0.2) 100%);
-}
-
-.volume-value,
-.pitch-value {
-    font-size: 9px;
-    color: var(--yp-text);
-    font-weight: 600;
-    min-width: 30px;
-    text-align: center;
-}
-
-/* Cart Button - Blue like main Add to cart */
-.cart-btn {
-    background: #7db9d8;
-    border: none;
-    color: #fff;
-    width: 32px;
-    height: 32px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-    margin-left: 5px;
-}
-
-.cart-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-/* Status Indicator */
-.status-indicator {
-    position: fixed;
-    top: 20px;
-    left: 20px;
+    transform: translateX(-50%);
     background: var(--yp-bg-light);
-    padding: 8px 12px;
-    border-radius: 4px;
-    border: 1px solid var(--yp-accent);
-    font-size: 11px;
-    color: var(--yp-text);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 12px 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 -8px 32px rgba(0,0,0,0.8);
+    z-index: 10;
     display: none;
-    z-index: 10001;
+    min-width: 120px;
 }
 
-.status-indicator.active {
+.volume-popup.active, .pitch-popup.active {
     display: block;
 }
 
-/* RESPONSIVE MOBILE 42px */
-@media (max-width: 768px) {
-    .player-inner {
-        padding: 6px 15px;
-        gap: 6px;
-        height: 42px;
-    }
-    
-    .vinyl-cover {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .playlist-container {
-        min-width: 160px;
-    }
-    
-    .waveform-container {
-        height: 30px;
-        padding: 4px;
-    }
-    
-    .control-btn.prev,
-    .control-btn.next {
-        font-size: 14px;
-    }
-    
-    .control-btn.play-pause {
-        width: 44px;
-        height: 44px;
-    }
-    
-    
-
-.control-btn.play-pause:active {
-    transform: scale(0.95);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-}
-    
-    .cart-btn {
-        width: 28px;
-        height: 28px;
-        font-size: 12px;
-    }
-    
-    .audio-controls {
-        min-width: 40px;
-        gap: 6px;
-    }
-    
-    .volume-icon svg,
-    .pitch-icon svg {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .volume-popup,
-    .pitch-popup {
-        transform: translateX(-50%) translateY(-8px);
-        padding: 6px 10px;
-        min-width: 100px;
-    }
-    
-    .volume-slider-horizontal,
-    .pitch-slider-horizontal {
-        width: 60px;
-        height: 3px;
-    }
-    
-    .playlist-toggle {
-        font-size: 11px;
-        padding: 5px 8px;
-    }
-    
-    .playlist-item {
-        font-size: 11px;
-        padding: 6px 8px;
-    }
-}
-/* FIX TITRE: Utiliser tout l'espace disponible */
-.playlist-info {
-    flex: 1 1 auto !important;
-    min-width: 200px !important;
-    max-width: 350px !important;
+.volume-slider, .pitch-slider {
+    width: 100%;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    position: relative;
+    cursor: pointer;
 }
 
-.product-line-1,
-.product-line-2 {
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+.volume-fill, .pitch-fill {
+    height: 100%;
+    background: #ffd700;
+    border-radius: 2px;
+    transition: width 0.1s;
 }
 
-/* Ajuster l'espacement entre vinyl et playlist-info */
-.player-inner {
-    gap: 10px !important; /* Réduit de 15px */
+.volume-handle, .pitch-handle {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background: #ffd700;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
-/* Donner plus d'espace au titre sur desktop */
-@media (min-width: 769px) {
-    .playlist-info {
-        min-width: 250px !important;
-        max-width: 400px !important;
-    }
+.volume-handle:hover, .pitch-handle:hover {
+    transform: translate(-50%, -50%) scale(1.2);
 }
 
-/* Sur mobile, permettre le wrap si nécessaire */
-@media (max-width: 768px) {
-    .product-line-1,
-    .product-line-2 {
-        white-space: normal !important;
-        line-height: 1.3 !important;
-    }
+.volume-label, .pitch-label {
+    text-align: center;
+    font-size: 9px;
+    color: #ccc;
+    margin-top: 6px;
+}
+
+/* Cart Button - Desktop */
+.cart-btn {
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    border-radius: 50%;
+    color: #ffd700;
+    cursor: pointer;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.cart-btn:hover {
+    background: rgba(255, 215, 0, 0.2);
+    border-color: rgba(255, 215, 0, 0.5);
+    transform: scale(1.05);
+}
+
+/* Body padding for desktop */
+body {
+    padding-bottom: 48px;
+}
+
+/* Status Indicator (Debug) */
+.status-indicator {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    z-index: 1000000;
+    display: none;
 }
 
 /* ==============================================
-   BENJAMIN MOBILE LAYOUT V4 - 2 LIGNES OVERRIDE
+   BENJAMIN MOBILE LAYOUT V4 - 2 LIGNES ONLY  
    ============================================== */
 
 @media (max-width: 768px) {
     
-    /* OVERRIDE responsive original - BENJAMIN V4 */
-    .yoyaku-player-ultra-fin {
-        height: 120px !important;
-        transform: translateY(0) !important; /* Force visible */
+    /* Reset styles mobiles précédents */
+    .desktop-only,
+    .mobile-hidden {
+        display: revert !important;
     }
     
-    .yoyaku-player-ultra-fin.active {
-        transform: translateY(0) !important;
+    /* Player mobile 120px height */
+    .yoyaku-player-ultra-fin {
+        height: 120px !important;
     }
     
     .yoyaku-player-ultra-fin.mobile-layout .player-inner,
@@ -754,14 +586,10 @@
         padding: 0 !important;
     }
     
-    /* Boutons circulaires avec vraies icônes - CERCLES PARFAITS */
+    /* Boutons circulaires avec vraies icônes */
     .yoyaku-player-ultra-fin .control-btn {
-        width: 34px !important;
-        height: 34px !important;
-        min-width: 34px !important;
-        min-height: 34px !important;
-        max-width: 34px !important;
-        max-height: 34px !important;
+        width: 32px !important;
+        height: 32px !important;
         border-radius: 50% !important;
         background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
         border: 1px solid rgba(255,255,255,0.25) !important;
@@ -773,8 +601,6 @@
         font-size: 0 !important;
         position: relative !important;
         margin: 0 1px !important;
-        box-sizing: border-box !important;
-        flex-shrink: 0 !important;
     }
     
     .yoyaku-player-ultra-fin .control-btn:hover,
@@ -804,18 +630,12 @@
         display: block !important;
     }
     
-    /* Play button spécial plus gros - CERCLE PARFAIT */
+    /* Play button spécial plus gros */
     .yoyaku-player-ultra-fin .play-pause {
-        width: 40px !important;
-        height: 40px !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
-        max-width: 40px !important;
-        max-height: 40px !important;
+        width: 38px !important;
+        height: 38px !important;
         background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1)) !important;
         border: 1px solid rgba(255,215,0,0.4) !important;
-        box-sizing: border-box !important;
-        flex-shrink: 0 !important;
     }
     
     .yoyaku-player-ultra-fin .btn-play::after {
@@ -847,25 +667,16 @@
         font-size: 0 !important;
     }
     
-    /* LIGNE 1: Cart button - CERCLE PARFAIT */
+    /* LIGNE 1: Cart button */
     .yoyaku-player-ultra-fin .cart-btn {
-        display: flex !important; /* Override hidden original */
         grid-area: cart !important;
-        width: 34px !important;
-        height: 34px !important;
-        min-width: 34px !important;
-        min-height: 34px !important;
-        max-width: 34px !important;
-        max-height: 34px !important;
+        width: 32px !important;
+        height: 32px !important;
         border-radius: 50% !important;
-        background: rgba(125,185,216,0.8) !important; /* Blue original */
-        border: 1px solid rgba(125,185,216,0.4) !important;
+        background: rgba(255,215,0,0.2) !important;
+        border: 1px solid rgba(255,215,0,0.4) !important;
         font-size: 14px !important;
         margin: 0 !important;
-        box-sizing: border-box !important;
-        flex-shrink: 0 !important;
-        align-items: center !important;
-        justify-content: center !important;
     }
     
     /* LIGNE 2: Waveform pleine largeur */
@@ -875,11 +686,10 @@
         width: 100% !important;
         height: 45px !important;
         margin: 5px !important;
-        background: rgba(45,45,45,0.8) !important; /* Comme original */
+        background: rgba(0,0,0,0.4) !important;
         border-radius: 22px !important;
         overflow: hidden !important;
         min-width: auto !important;
-        border: 1px solid #666 !important;
     }
     
     .yoyaku-player-ultra-fin #waveform {
@@ -887,13 +697,25 @@
         width: 100% !important;
     }
     
-    /* Masquer track-display sur mobile */
+    /* Masquer sur mobile */
+    .yoyaku-player-ultra-fin .audio-controls,
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup,
+    .yoyaku-player-ultra-fin .volume-icon {
+        display: none !important;
+    }
+    
     .yoyaku-player-ultra-fin .track-display {
         display: none !important;
     }
     
     .yoyaku-player-ultra-fin .playlist-dropdown {
         display: none !important;
+    }
+    
+    /* Body padding ajusté */
+    body {
+        padding-bottom: 120px !important;
     }
     
     /* Animation rotation vinyle */
@@ -949,19 +771,5 @@
             font-size: 14px !important;
             color: #ffd700 !important;
         }
-    }
-}
-
-/* Body padding ajusté pour mobile Benjamin */
-@media (max-width: 768px) {
-    body {
-        padding-bottom: 120px !important;
-    }
-}
-
-/* Body padding desktop */
-@media (min-width: 769px) {
-    body {
-        padding-bottom: 48px !important;
     }
 }

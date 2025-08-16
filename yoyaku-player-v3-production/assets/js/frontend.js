@@ -42,12 +42,8 @@ class YoyakuPlayerUltraFin {
     }
     
     async loadWaveSurfer() {
-        // Skip WaveSurfer on mobile for better performance
-        if (window.yoyaku_player_v3 && window.yoyaku_player_v3.is_mobile) {
-            console.log('Mobile detected, using HTML5 audio for better performance');
-            this.useHTML5Audio = true;
-            return;
-        }
+        // BENJAMIN FIX: Always use WaveSurfer for real waveform synchronization
+        console.log('Loading WaveSurfer for real audio analysis and synchronization');
         
         // Try to load WaveSurfer from CDN with fallback
         try {
@@ -182,17 +178,21 @@ class YoyakuPlayerUltraFin {
                 barGap: 1,
                 barRadius: 0,
                 responsive: true,
-                height: 24,
+                height: window.innerWidth <= 768 ? 40 : 24, // Bigger on mobile
                 normalize: true,
                 interact: true,
                 hideScrollbar: true,
                 fillParent: true,
-                // Use Web Audio API for better waveform generation
+                // BENJAMIN: Force Web Audio API for real waveform analysis
                 backend: 'WebAudio',
-                // Generate waveform peaks for better visualization
+                // Force real peaks generation from audio analysis
                 peaks: null,
                 // Enable CORS for audio files
-                cors: 'anonymous'
+                cors: 'anonymous',
+                // Real-time analysis for better synchronization
+                splitChannels: false,
+                // Improved rendering for mobile
+                forceDecode: true
             });
             
             // Initialize protection flag for this instance
@@ -274,13 +274,54 @@ class YoyakuPlayerUltraFin {
             console.log('⏸️ Audio paused');
         });
         
-        // Ultra-light waveform with white/grey progress (no time display)
+        // BENJAMIN FIX: Use real WaveSurfer instead of fake waveform
+        console.log('Creating WaveSurfer instance for real audio analysis');
+        try {
+            this.wavesurfer = WaveSurfer.create({
+                container: '#waveform',
+                waveColor: 'rgba(255, 255, 255, 0.3)',
+                progressColor: '#ffd700',
+                cursorColor: '#ffffff',
+                barWidth: 2,
+                barGap: 1,
+                barRadius: 0,
+                responsive: true,
+                height: window.innerWidth <= 768 ? 40 : 24,
+                normalize: true,
+                interact: true,
+                hideScrollbar: true,
+                fillParent: true,
+                backend: 'WebAudio',
+                peaks: null,
+                cors: 'anonymous',
+                splitChannels: false,
+                forceDecode: true
+            });
+            
+            // Bind WaveSurfer events for HTML5 fallback mode
+            this.wavesurfer.on('ready', () => {
+                console.log('✅ WaveSurfer ready with real waveform analysis');
+                if (this.autoPlayAfterLoad) {
+                    this.autoPlayAfterLoad = false;
+                    this.play();
+                }
+            });
+            
+            this.wavesurfer.on('finish', () => {
+                this.nextTrack();
+                this.isPlaying = false;
+                this.updatePlayButton();
+            });
+            
+            this.useHTML5Audio = false; // Force WaveSurfer usage
+            return;
+        } catch (error) {
+            console.error('WaveSurfer creation failed in HTML5 fallback:', error);
+        }
+        
+        // True fallback only if WaveSurfer completely fails
         document.getElementById('waveform').innerHTML = `
-            <div class="yoyaku-ultrafin-waveform" style="height: 100%; display: flex; align-items: center; position: relative; cursor: pointer;">
-                <div class="fake-waveform" id="waveform-bars" style="display: flex; align-items: center; justify-content: space-between; height: 20px; width: 100%; gap: 1px;">
-                    ${this.generateTrackSpecificWaveform()}
-                </div>
-            </div>
+            <div class="waveform-loading">Loading real waveform...</div>
         `;
         
         // Add waveform click handler with better targeting
@@ -695,17 +736,13 @@ class YoyakuPlayerUltraFin {
             this.audio.src = track.url;
             this.audio.load();
             
-            // Regenerate waveform for this specific track
-            setTimeout(() => {
-                const fakeWaveform = document.querySelector('.fake-waveform');
-                if (fakeWaveform) {
-                    fakeWaveform.innerHTML = this.generateTrackSpecificWaveform();
-                    console.log(`✅ Waveform regenerated for: ${track.name}`);
-                    
-                    // Re-bind waveform progress update
-                    this.updateWaveformProgress(0);
-                }
-            }, 100);
+            // Load real waveform with WaveSurfer
+            if (this.wavesurfer) {
+                console.log(`✅ Loading real waveform for: ${track.name}`);
+                this.wavesurfer.load(track.url + '?t=' + Date.now());
+            } else {
+                console.log('WaveSurfer not available, track will play without waveform');
+            }
         }
     }
     
@@ -1122,80 +1159,9 @@ class YoyakuPlayerUltraFin {
         console.log('Old players hidden');
     }
     
-    generateTrackSpecificWaveform() {
-        // Get current track name to generate specific pattern
-        const trackName = this.tracks && this.tracks[this.currentTrackIndex] ? 
-                         this.tracks[this.currentTrackIndex].name : 'Unknown';
-        
-        // Create unique seed from track name
-        const seed = this.hashCode(trackName);
-        
-        const bars = [];
-        
-        // Calculate responsive number of bars based on container width
-        const waveformContainer = document.querySelector('.waveform-container');
-        const containerWidth = waveformContainer ? waveformContainer.offsetWidth : window.innerWidth - 200;
-        
-        // 3px per bar (2px width + 1px gap), fill entire width
-        const numBars = Math.floor(containerWidth / 3);
-        console.log(`Generating ${numBars} bars for ${containerWidth}px width`);
-        
-        for (let i = 0; i < numBars; i++) {
-            const progress = i / numBars;
-            let height = 2;
-            
-            // Use track-specific randomness
-            const trackRandom = this.seededRandom(seed + i);
-            
-            // Electronic/IDM patterns (from track style)
-            if (trackName.includes('Binary') || trackName.includes('Beta')) {
-                // More digital/glitchy pattern
-                if (i % 16 < 2) height += 10; // Digital kicks
-                if (i % 8 === 7) height += 8; // Glitch hits
-                height += Math.sin(i * 0.15) * 4; // Digital wave
-            } else if (trackName.includes('Orion') || trackName.includes('Constellation')) {
-                // Ambient/space pattern
-                height += Math.sin(i * 0.05) * 6; // Slow ambient wave
-                if (i % 64 < 8) height += 12; // Ambient swells
-            } else {
-                // Default electronic pattern
-                if (i % 32 < 4) height += 12; // Kick pattern
-                if (i % 16 === 8) height += 6; // Snare pattern
-                if (i % 8 === 0) height += 4; // Hi-hat pattern
-            }
-            
-            // Track-specific variation
-            height += trackRandom * 4;
-            
-            // Music structure based on track
-            if (progress > 0.1 && progress < 0.3) height *= 0.8; // Intro
-            if (progress > 0.3 && progress < 0.7) height *= 1.3; // Main
-            if (progress > 0.7 && progress < 0.85) height *= 1.6; // Climax
-            if (progress > 0.85) height *= 0.5; // Outro
-            
-            height = Math.max(2, Math.min(18, height));
-            
-            bars.push(`<div class="waveform-bar" data-bar-index="${i}" style="flex: 0 0 2px; width: 2px; height: ${height}px; background: rgba(255,255,255,0.3); border-radius: 1px; transition: background-color 0.1s;"></div>`);
-        }
-        
-        return bars.join('');
-    }
+    // REMOVED: generateTrackSpecificWaveform() - now using real WaveSurfer analysis
     
-    updateWaveformProgress(percentage) {
-        const bars = document.querySelectorAll('.waveform-bar');
-        const totalBars = bars.length;
-        const playedBars = Math.floor((percentage / 100) * totalBars);
-        
-        bars.forEach((bar, index) => {
-            if (index < playedBars) {
-                // Partie jouée = blanche
-                bar.style.background = 'rgba(255, 255, 255, 0.9)';
-            } else {
-                // Partie à venir = grise
-                bar.style.background = 'rgba(255, 255, 255, 0.3)';
-            }
-        });
-    }
+    // REMOVED: updateWaveformProgress() - WaveSurfer handles progress automatically
     
     hashCode(str) {
         let hash = 0;
