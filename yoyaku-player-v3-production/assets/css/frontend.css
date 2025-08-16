@@ -98,8 +98,9 @@
 .playlist-container {
     flex-shrink: 0;
     min-width: 280px;
-    max-width: 350px;
+    max-width: 520px; /* BENJAMIN: Plus d'espace desktop */
     position: relative;
+    flex-grow: 1; /* Utilise l'espace disponible */
 }
 
 .playlist-toggle {
@@ -625,7 +626,7 @@
 .playlist-info {
     flex: 1 1 auto !important;
     min-width: 200px !important;
-    max-width: 350px !important;
+    max-width: 480px !important; /* BENJAMIN: Plus d'espace pour métadonnées */
 }
 
 .product-line-1,
@@ -643,8 +644,18 @@
 /* Donner plus d'espace au titre sur desktop */
 @media (min-width: 769px) {
     .playlist-info {
-        min-width: 250px !important;
-        max-width: 400px !important;
+        min-width: 300px !important;
+        max-width: 500px !important; /* BENJAMIN: Textes plus lisibles desktop */
+    }
+}
+
+/* Encore plus d'espace sur très larges écrans */
+@media (min-width: 1200px) {
+    .playlist-container {
+        max-width: 600px; /* Ultra-large screens */
+    }
+    .playlist-info {
+        max-width: 550px !important;
     }
 }
 
@@ -727,21 +738,22 @@
     }
     
     .yoyaku-player-ultra-fin .product-line-1 {
-        font-size: 11px !important;
+        font-size: 9px !important;
         font-weight: 600 !important;
         color: #fff !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        margin-bottom: 3px !important;
+        margin-bottom: 2px !important;
     }
     
     .yoyaku-player-ultra-fin .product-line-2 {
-        font-size: 9px !important;
+        font-size: 8px !important;
         color: rgba(255,255,255,0.7) !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        line-height: 1.2 !important;
     }
     
     /* LIGNE 1: Controls avec icônes SVG */
@@ -896,6 +908,19 @@
         display: none !important;
     }
     
+    /* BENJAMIN: Masquer PITCH seulement, garder VOLUME */
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup {
+        display: none !important;
+    }
+    
+    /* Volume reste visible mais plus petit */
+    .yoyaku-player-ultra-fin .volume-icon {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+    }
+    
     /* Animation rotation vinyle */
     @keyframes vinyl-spin-mobile {
         from { transform: rotate(0deg); }
@@ -963,5 +988,84 @@
 @media (min-width: 769px) {
     body {
         padding-bottom: 48px !important;
+    }
+}
+
+/* ==============================================
+   ULTRA-RESPONSIVE - TRÈS PETITS ÉCRANS
+   ============================================== */
+
+@media (max-width: 480px) {
+    /* Player encore plus compact */
+    .yoyaku-player-ultra-fin .player-inner {
+        padding: 3px !important;
+        grid-template-columns: 50px 1fr 110px 30px !important;
+    }
+    
+    /* Vinyl plus petit */
+    .yoyaku-player-ultra-fin .vinyl-cover {
+        width: 40px !important;
+        height: 100px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .vinyl-wrapper {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .vinyl-image {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
+    /* Boutons plus petits */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        max-width: 28px !important;
+        max-height: 28px !important;
+        gap: 2px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .cart-btn {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        max-width: 28px !important;
+        max-height: 28px !important;
+        font-size: 12px !important;
+    }
+    
+    /* Polices encore plus petites */
+    .yoyaku-player-ultra-fin .product-line-1 {
+        font-size: 8px !important;
+        margin-bottom: 1px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .product-line-2 {
+        font-size: 7px !important;
+    }
+    
+    /* Volume plus petit */
+    .yoyaku-player-ultra-fin .volume-icon {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    
+    /* Controls plus serrés */
+    .yoyaku-player-ultra-fin .player-controls {
+        gap: 1px !important;
     }
 }
