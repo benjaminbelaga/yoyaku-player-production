@@ -299,13 +299,6 @@ class YoyakuPlayerUltraFin {
             });
             
             // Bind WaveSurfer events for HTML5 fallback mode
-            this.wavesurfer.on('ready', () => {
-                console.log('✅ WaveSurfer ready with real waveform analysis');
-                if (this.autoPlayAfterLoad) {
-                    this.autoPlayAfterLoad = false;
-                    this.play();
-                }
-            });
             
             this.wavesurfer.on('finish', () => {
                 this.nextTrack();
