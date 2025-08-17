@@ -654,8 +654,62 @@
     gap: 10px !important; /* Réduit de 15px */
 }
 
-/* Desktop: Playlist s'adapte, waveform prend le reste */
-@media (min-width: 769px) {
+/* Format tablet horizontal 400-970px - Playlist à côté */
+@media (min-width: 400px) and (max-width: 970px) {
+    .player-inner {
+        padding: 8px 25px !important;
+        gap: 18px !important;
+    }
+    
+    .playlist-container {
+        display: flex !important;
+        flex-direction: row !important; /* Horizontal comme desktop */
+        align-items: center !important;
+        gap: 12px !important;
+        min-width: fit-content !important;
+        max-width: 50% !important;
+    }
+    
+    .playlist-info {
+        min-width: fit-content !important;
+    }
+    
+    .track-display {
+        display: flex !important; /* Visible à côté */
+        margin-top: 0 !important;
+        margin-left: 8px !important;
+    }
+    
+    .cart-btn {
+        margin-right: 10px !important;
+    }
+}
+
+/* Format mobile compact <400px - Playlist en dessous */
+@media (max-width: 399px) {
+    .player-inner {
+        padding: 6px 15px !important;
+        gap: 12px !important;
+    }
+    
+    .playlist-container {
+        display: flex !important;
+        flex-direction: column !important; /* Vertical - en dessous */
+        align-items: flex-start !important;
+        gap: 4px !important;
+        min-width: fit-content !important;
+        max-width: 60% !important;
+    }
+    
+    .track-display {
+        display: flex !important; /* Visible en dessous */
+        margin-top: 4px !important;
+        margin-left: 0 !important;
+    }
+}
+
+/* Desktop >970px - Playlist dropdown sous metadata */
+@media (min-width: 971px) {
     .playlist-container {
         min-width: fit-content !important;
         max-width: 40% !important; /* Maximum 40% pour laisser 60% au waveform */
