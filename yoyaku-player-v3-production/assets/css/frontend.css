@@ -669,8 +669,8 @@
     }
 }
 
-/* Tablet 400-970px - Dropdown à côté metadata */
-@media (min-width: 400px) and (max-width: 970px) {
+/* Tablet 500-970px - Dropdown à côté metadata */
+@media (min-width: 500px) and (max-width: 970px) {
     .yoyaku-player-ultra-fin .player-inner .track-display {
         display: flex !important;
         margin-top: 0 !important;
@@ -696,8 +696,28 @@
     }
 }
 
-/* Mobile <400px - Dropdown en dessous metadata */
-@media (max-width: 399px) {
+/* Mobile <500px - Dropdown en dessous metadata - PRIORITÉ ABSOLUE */
+@media (max-width: 499px) {
+    /* OVERRIDE COMPLET du layout tablet */
+    .yoyaku-player-ultra-fin .player-inner {
+        display: grid !important;
+        grid-template-rows: auto auto !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        min-height: 80px !important;
+        padding: 8px !important;
+        gap: 6px !important;
+    }
+    
+    /* LIGNE 1: Vinyl + metadata + controls + cart */
+    .yoyaku-player-ultra-fin .vinyl-cover,
+    .yoyaku-player-ultra-fin .playlist-info,
+    .yoyaku-player-ultra-fin .player-controls,
+    .yoyaku-player-ultra-fin .cart-btn {
+        grid-row: 1 !important;
+    }
+    
+    /* LIGNE 2: Track display EN DESSOUS */
     .yoyaku-player-ultra-fin .player-inner .track-display {
         display: flex !important;
         margin-top: 4px !important;
@@ -800,14 +820,15 @@
     
     .yoyaku-player-ultra-fin.mobile-layout .player-inner,
     .yoyaku-player-ultra-fin .player-inner {
-        height: 120px !important;
+        height: 150px !important; /* Plus de hauteur pour 3 lignes */
         display: grid !important;
-        grid-template-rows: 60px 60px !important;
+        grid-template-rows: 50px 50px 40px !important; /* 3 lignes */
         grid-template-columns: 45px 1fr 85px 44px !important;
         grid-template-areas: 
             "vinyl metadata controls cart"
-            "vinyl waveform waveform waveform" !important;
-        gap: 0 !important;
+            "vinyl waveform waveform waveform"
+            "track-display track-display track-display track-display" !important;
+        gap: 2px !important;
         padding: 5px !important;
         align-items: center !important;
     }
@@ -1013,9 +1034,28 @@
         width: 100% !important;
     }
     
-    /* Masquer track-display sur mobile */
+    /* AFFICHER track-display EN DESSOUS sur mobile - STYLE FINAL */
     .yoyaku-player-ultra-fin .track-display {
-        display: none !important;
+        display: flex !important;
+        grid-area: track-display !important;
+        margin: 2px 5px !important;
+        background: #333 !important; /* Gris foncé discret */
+        color: #fff !important;
+        padding: 6px 10px !important;
+        border-radius: 4px !important;
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        border: 1px solid #555 !important;
+        min-height: 28px !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+    
+    /* FORCER playlist-dropdown visible aussi */
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+        position: static !important;
+        margin-top: 2px !important;
     }
     
     .yoyaku-player-ultra-fin .playlist-dropdown {
@@ -1094,7 +1134,7 @@
 /* Body padding ajusté pour mobile Benjamin */
 @media (max-width: 768px) {
     body {
-        padding-bottom: 120px !important;
+        padding-bottom: 150px !important; /* Ajusté pour player plus haut */
     }
 }
 
