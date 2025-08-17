@@ -94,13 +94,14 @@
     to { transform: rotate(360deg); }
 }
 
-/* Playlist Dropdown */
+/* Playlist Dropdown - SMART ADAPTIVE WIDTH */
 .playlist-container {
     flex-shrink: 0;
-    min-width: 280px;
-    max-width: 520px; /* BENJAMIN: Plus d'espace desktop */
+    min-width: fit-content;
+    max-width: fit-content; /* Adapte exactement au contenu */
     position: relative;
-    flex-grow: 1; /* Utilise l'espace disponible */
+    flex-grow: 0; /* NE PAS grandir, laisser espace au waveform */
+    margin-right: 15px; /* Petit espace avant waveform */
 }
 
 .playlist-toggle {
@@ -238,14 +239,14 @@
 
 /* Waveform Container ULTRA-FIN - CLICKABLE */
 .waveform-container {
-    flex: 1;
+    flex: 1 1 auto; /* PREND TOUT L'ESPACE DISPONIBLE */
     background: #2d2d2d;
     border-radius: 4px;
     padding: 6px 12px;
     position: relative;
     height: 36px;
     border: 1px solid #444;
-    min-width: 200px;
+    min-width: 300px; /* Minimum pour être utilisable */
     cursor: pointer;
     overflow: hidden;
 }
@@ -622,18 +623,19 @@
         padding: 6px 8px;
     }
 }
-/* FIX TITRE: Utiliser tout l'espace disponible */
+/* FIX TITRE: Adapter à la longueur réelle du contenu */
 .playlist-info {
-    flex: 1 1 auto !important;
-    min-width: 200px !important;
-    max-width: 480px !important; /* BENJAMIN: Plus d'espace pour métadonnées */
+    flex: 0 1 auto !important;
+    min-width: fit-content !important;
+    max-width: none !important; /* Pas de limite, s'adapte au contenu */
+    white-space: nowrap !important; /* Empêche le wrap */
 }
 
 .product-line-1,
 .product-line-2 {
     white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
+    overflow: visible !important; /* JAMAIS de crop "..." */
+    text-overflow: clip !important; /* Pas d'ellipsis */
 }
 
 /* Ajuster l'espacement entre vinyl et playlist-info */
@@ -641,21 +643,31 @@
     gap: 10px !important; /* Réduit de 15px */
 }
 
-/* Donner plus d'espace au titre sur desktop */
+/* Desktop: Playlist s'adapte, waveform prend le reste */
 @media (min-width: 769px) {
+    .playlist-container {
+        min-width: fit-content !important;
+        max-width: 40% !important; /* Maximum 40% pour laisser 60% au waveform */
+    }
+    
     .playlist-info {
-        min-width: 300px !important;
-        max-width: 500px !important; /* BENJAMIN: Textes plus lisibles desktop */
+        min-width: fit-content !important;
+        max-width: none !important;
+    }
+    
+    .waveform-container {
+        min-width: 400px !important; /* Plus d'espace minimum sur desktop */
     }
 }
 
-/* Encore plus d'espace sur très larges écrans */
+/* Encore plus d'espace waveform sur très larges écrans */
 @media (min-width: 1200px) {
     .playlist-container {
-        max-width: 600px; /* Ultra-large screens */
+        max-width: 35% !important; /* Seulement 35% max sur grands écrans */
     }
-    .playlist-info {
-        max-width: 550px !important;
+    
+    .waveform-container {
+        min-width: 500px !important; /* Waveform énorme sur grands écrans */
     }
 }
 
