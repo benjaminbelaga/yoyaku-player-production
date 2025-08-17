@@ -654,59 +654,76 @@
     gap: 10px !important; /* Réduit de 15px */
 }
 
-/* Format tablet horizontal 400-970px - Playlist à côté */
-@media (min-width: 400px) and (max-width: 970px) {
-    .player-inner {
-        padding: 8px 25px !important;
-        gap: 18px !important;
-    }
-    
-    .playlist-container {
-        display: flex !important;
-        flex-direction: row !important; /* Horizontal comme desktop */
-        align-items: center !important;
-        gap: 12px !important;
-        min-width: fit-content !important;
-        max-width: 50% !important;
-    }
-    
-    .playlist-info {
-        min-width: fit-content !important;
-    }
-    
-    .track-display {
-        display: flex !important; /* Visible à côté */
-        margin-top: 0 !important;
-        margin-left: 8px !important;
-    }
-    
-    .cart-btn {
-        margin-right: 10px !important;
-    }
-}
+/* PLAYLIST RESPONSIVE - 3 BREAKPOINTS */
 
-/* Format mobile compact <400px - Playlist en dessous */
-@media (max-width: 399px) {
-    .player-inner {
-        padding: 6px 15px !important;
-        gap: 12px !important;
-    }
-    
-    .playlist-container {
+/* Desktop >970px - Dropdown sous metadata */
+@media (min-width: 971px) {
+    .yoyaku-player-ultra-fin .player-inner .track-display {
         display: flex !important;
-        flex-direction: column !important; /* Vertical - en dessous */
-        align-items: flex-start !important;
-        gap: 4px !important;
-        min-width: fit-content !important;
-        max-width: 60% !important;
-    }
-    
-    .track-display {
-        display: flex !important; /* Visible en dessous */
         margin-top: 4px !important;
         margin-left: 0 !important;
     }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+    }
 }
+
+/* Tablet 400-970px - Dropdown à côté metadata */
+@media (min-width: 400px) and (max-width: 970px) {
+    .yoyaku-player-ultra-fin .player-inner .track-display {
+        display: flex !important;
+        margin-top: 0 !important;
+        margin-left: 8px !important;
+        background: #333 !important; /* Visible sur tablet */
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-container {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+    }
+    
+    /* MASQUER PITCH CONTROL sur tablet */
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup {
+        display: none !important;
+    }
+}
+
+/* Mobile <400px - Dropdown en dessous metadata */
+@media (max-width: 399px) {
+    .yoyaku-player-ultra-fin .player-inner .track-display {
+        display: flex !important;
+        margin-top: 4px !important;
+        margin-left: 0 !important;
+        background: #444 !important; /* Visible sur mobile */
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+    }
+    
+    /* MASQUER PITCH CONTROL sur mobile */
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup {
+        display: none !important;
+    }
+}
+
+/* SUPPRIME TEMPORAIREMENT */
 
 /* Desktop >970px - Playlist dropdown sous metadata */
 @media (min-width: 971px) {
