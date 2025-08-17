@@ -656,8 +656,8 @@
 
 /* PLAYLIST RESPONSIVE - 3 BREAKPOINTS */
 
-/* Desktop >970px - Dropdown sous metadata */
-@media (min-width: 971px) {
+/* Desktop >700px - Dropdown sous metadata */
+@media (min-width: 701px) {
     .yoyaku-player-ultra-fin .player-inner .track-display {
         display: flex !important;
         margin-top: 4px !important;
@@ -669,8 +669,8 @@
     }
 }
 
-/* Tablet 500-970px - Dropdown à côté metadata */
-@media (min-width: 500px) and (max-width: 970px) {
+/* SUPPRIME - Tablet à côté posait problème */
+@media (min-width: 999px) and (max-width: 1000px) {
     .yoyaku-player-ultra-fin .player-inner .track-display {
         display: flex !important;
         margin-top: 0 !important;
@@ -696,8 +696,8 @@
     }
 }
 
-/* Mobile <500px - Dropdown en dessous metadata - PRIORITÉ ABSOLUE */
-@media (max-width: 499px) {
+/* Mobile/Tablet <700px - Dropdown en dessous - SOLUTION CHEVAUCHEMENT */
+@media (max-width: 700px) {
     /* OVERRIDE COMPLET du layout tablet */
     .yoyaku-player-ultra-fin .player-inner {
         display: grid !important;
