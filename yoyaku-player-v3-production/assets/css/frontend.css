@@ -160,6 +160,12 @@
     min-width: 120px;
     font-size: 10px;
     margin-top: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.track-display:hover {
+    background: #444;
 }
 
 .current-track {
@@ -665,10 +671,14 @@
         max-width: none !important;
     }
     
-    /* REMETTRE track-display sur desktop */
+    /* REMETTRE track-display ET playlist-dropdown sur desktop */
     .yoyaku-player-ultra-fin .track-display {
         display: flex !important; /* Réafficher sur desktop */
         margin-top: 4px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important; /* Réafficher dropdown sur desktop */
     }
     
     .waveform-container {
