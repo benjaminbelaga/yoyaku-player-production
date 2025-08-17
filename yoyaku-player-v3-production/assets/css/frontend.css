@@ -1033,12 +1033,41 @@
 }
 
 /* ==============================================
+   FIX SPÉCIFIQUE IPHONE SE (375px)
+   ============================================== */
+@media (min-width: 361px) and (max-width: 375px) {
+    .yoyaku-player-ultra-fin .player-inner {
+        grid-template-columns: 41px 1fr 69px 42px !important;
+        /* 41+69+42 = 152px fixes = 223px pour waveform sur 375px */
+    }
+}
+
+/* ==============================================
    FIX SPÉCIFIQUE IPHONE 12 PRO (390px)
    ============================================== */
-@media (min-width: 361px) and (max-width: 390px) {
+@media (min-width: 376px) and (max-width: 390px) {
     .yoyaku-player-ultra-fin .player-inner {
-        grid-template-columns: 42px 1fr 72px 43px !important;
-        /* 42+72+43 = 157px fixes = 233px pour waveform sur 390px */
+        grid-template-columns: 41px 1fr 70px 42px !important;
+        /* 41+70+42 = 153px fixes = 237px pour waveform sur 390px */
+    }
+    
+    /* Boutons légèrement plus petits pour gagner de l'espace */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 27px !important;
+        height: 27px !important;
+        min-width: 27px !important;
+        min-height: 27px !important;
+        max-width: 27px !important;
+        max-height: 27px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 31px !important;
+        height: 31px !important;
+        min-width: 31px !important;
+        min-height: 31px !important;
+        max-width: 31px !important;
+        max-height: 31px !important;
     }
 }
 
