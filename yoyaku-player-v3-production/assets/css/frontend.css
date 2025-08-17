@@ -689,7 +689,7 @@
         height: 120px !important;
         display: grid !important;
         grid-template-rows: 60px 60px !important;
-        grid-template-columns: 50px 1fr 90px 44px !important;
+        grid-template-columns: 45px 1fr 85px 44px !important;
         grid-template-areas: 
             "vinyl metadata controls cart"
             "vinyl waveform waveform waveform" !important;
@@ -992,14 +992,53 @@
 }
 
 /* ==============================================
+   FIX SPÉCIFIQUE GALAXY S8+ (360px)
+   ============================================== */
+@media (max-width: 360px) {
+    .yoyaku-player-ultra-fin .player-inner {
+        grid-template-columns: 40px 1fr 68px 42px !important;
+        /* 40+68+42 = 150px fixes = 210px pour waveform sur 360px */
+    }
+    
+    /* Ajustements boutons pour Galaxy S8+ */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+        max-width: 26px !important;
+        max-height: 26px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        min-height: 30px !important;
+        max-width: 30px !important;
+        max-height: 30px !important;
+    }
+}
+
+/* ==============================================
+   FIX SPÉCIFIQUE IPHONE 12 PRO (390px)
+   ============================================== */
+@media (min-width: 361px) and (max-width: 390px) {
+    .yoyaku-player-ultra-fin .player-inner {
+        grid-template-columns: 42px 1fr 72px 43px !important;
+        /* 42+72+43 = 157px fixes = 233px pour waveform sur 390px */
+    }
+}
+
+/* ==============================================
    ULTRA-RESPONSIVE - TRÈS PETITS ÉCRANS
    ============================================== */
 
-@media (max-width: 480px) {
+@media (min-width: 391px) and (max-width: 480px) {
     /* Player encore plus compact */
     .yoyaku-player-ultra-fin .player-inner {
         padding: 3px !important;
-        grid-template-columns: 45px 1fr 80px 44px !important;
+        grid-template-columns: 42px 1fr 75px 44px !important;
     }
     
     /* Vinyl plus petit */
