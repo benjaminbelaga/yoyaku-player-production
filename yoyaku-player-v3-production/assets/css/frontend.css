@@ -102,6 +102,9 @@
     position: relative;
     flex-grow: 0; /* NE PAS grandir, laisser espace au waveform */
     margin-right: 15px; /* Petit espace avant waveform */
+    display: flex;
+    flex-direction: column; /* Stack metadata + track display vertically */
+    gap: 4px;
 }
 
 .playlist-toggle {
@@ -155,6 +158,8 @@
     padding: 4px 8px;
     border-radius: 2px;
     min-width: 120px;
+    font-size: 10px;
+    margin-top: 3px;
 }
 
 .current-track {
@@ -648,6 +653,11 @@
     .playlist-container {
         min-width: fit-content !important;
         max-width: 40% !important; /* Maximum 40% pour laisser 60% au waveform */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: center !important; /* Centrer verticalement */
+        gap: 6px !important;
     }
     
     .playlist-info {
@@ -655,8 +665,19 @@
         max-width: none !important;
     }
     
+    /* REMETTRE track-display sur desktop */
+    .yoyaku-player-ultra-fin .track-display {
+        display: flex !important; /* Réafficher sur desktop */
+        margin-top: 4px !important;
+    }
+    
     .waveform-container {
         min-width: 400px !important; /* Plus d'espace minimum sur desktop */
+    }
+    
+    /* Alignement vertical avec bouton play */
+    .player-inner {
+        align-items: center !important; /* Tout centré verticalement */
     }
 }
 
@@ -1037,8 +1058,29 @@
    ============================================== */
 @media (min-width: 361px) and (max-width: 375px) {
     .yoyaku-player-ultra-fin .player-inner {
-        grid-template-columns: 41px 1fr 69px 42px !important;
-        /* 41+69+42 = 152px fixes = 223px pour waveform sur 375px */
+        grid-template-columns: 40px 1fr 66px 44px !important;
+        /* 40+66+44 = 150px fixes = 225px pour waveform sur 375px */
+        /* Cart button 44px pour ne pas être cropé */
+    }
+    
+    /* Boutons plus compacts pour iPhone SE */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+        max-width: 26px !important;
+        max-height: 26px !important;
+        margin: 0 !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        min-height: 30px !important;
+        max-width: 30px !important;
+        max-height: 30px !important;
     }
 }
 
