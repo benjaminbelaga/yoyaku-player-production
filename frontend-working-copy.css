@@ -689,7 +689,7 @@
         height: 120px !important;
         display: grid !important;
         grid-template-rows: 60px 60px !important;
-        grid-template-columns: 50px 1fr 90px 44px !important;
+        grid-template-columns: 60px 1fr 140px 40px !important;
         grid-template-areas: 
             "vinyl metadata controls cart"
             "vinyl waveform waveform waveform" !important;
@@ -999,7 +999,7 @@
     /* Player encore plus compact */
     .yoyaku-player-ultra-fin .player-inner {
         padding: 3px !important;
-        grid-template-columns: 45px 1fr 80px 44px !important;
+        grid-template-columns: 50px 1fr 110px 30px !important;
     }
     
     /* Vinyl plus petit */
