@@ -79,7 +79,7 @@ class YoyakuPlayerUltraFin {
     }
     
     createPlayerHTML() {
-        const isMobile = window.innerWidth <= 768;
+        const isMobile = window.innerWidth <= 341; // Fixed: était 768, maintenant 341 aligné avec CSS breakpoints
         const playerHTML = `
             <div class="yoyaku-player-ultra-fin ${isMobile ? 'mobile-layout' : ''}" id="yoyaku-player">
                 <div class="player-inner">
@@ -501,6 +501,12 @@ class YoyakuPlayerUltraFin {
         // Playlist toggle
         document.querySelector('.playlist-toggle').addEventListener('click', () => {
             document.querySelector('.playlist-container').classList.toggle('open');
+        });
+        
+        // Touch events pour mobile/tablet - Benjamin fix
+        document.querySelector(".playlist-toggle").addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            document.querySelector(".playlist-container").classList.toggle("open");
         });
         
         // Playlist items (delegated)

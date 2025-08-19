@@ -573,7 +573,7 @@
    ULTRA PETIT: 320-374px (Galaxy Fold, anciens)
    Layout 3 lignes ultra-compact
    ============================================== */
-@media (max-width: 540px) {
+@media (max-width: 341px) {
     .yoyaku-player-ultra-fin {
         height: 130px !important;
         background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%) !important;
@@ -704,7 +704,7 @@
    IPHONE SE/8: 375-389px
    Layout 3 lignes optimisé
    ============================================== */
-@media (min-width: 541px) and (max-width: 389px) {
+@media (min-width: 342px) and (max-width: 389px) {
     .yoyaku-player-ultra-fin {
         height: 135px !important;
         background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%) !important;
@@ -776,7 +776,7 @@
     .yoyaku-player-ultra-fin .player-inner {
         height: 120px !important;
         display: grid !important;
-        grid-template-rows: 55px 65px !important;
+        grid-template-rows: 60px 60px !important;
         grid-template-columns: 50px 1fr auto !important;
         grid-template-areas: 
             "vinyl metadata controls"
@@ -908,7 +908,7 @@
     .yoyaku-player-ultra-fin .player-inner {
         height: 120px !important;
         display: grid !important;
-        grid-template-rows: 55px 65px !important;
+        grid-template-rows: 60px 60px !important;
         grid-template-columns: 55px 1fr auto !important;
         grid-template-areas: 
             "vinyl metadata controls"
@@ -1063,11 +1063,11 @@
 }
 
 /* Body padding ajusté selon hauteur */
-@media (max-width: 540px) {
+@media (max-width: 341px) {
     body { padding-bottom: 130px !important; }
 }
 
-@media (min-width: 541px) and (max-width: 389px) {
+@media (min-width: 342px) and (max-width: 389px) {
     body { padding-bottom: 135px !important; }
 }
 
@@ -1088,7 +1088,7 @@
         content: '';
         width: 14px !important;
         height: 14px !important;
-        background-image: url("../icons/rewind.svg") !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         position: absolute !important;
@@ -1102,7 +1102,7 @@
         content: '';
         width: 14px !important;
         height: 14px !important;
-        background-image: url("../icons/forward.svg") !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         position: absolute !important;
@@ -1116,7 +1116,7 @@
         content: '';
         width: 16px !important;
         height: 16px !important;
-        background-image: url("../icons/play.svg") !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M8 5v14l11-7z"/></svg>') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         position: absolute !important;
@@ -1129,7 +1129,7 @@
         content: '';
         width: 16px !important;
         height: 16px !important;
-        background-image: url("../icons/pause.svg") !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         position: absolute !important;
@@ -1417,7 +1417,7 @@
    ============================================== */
 @media (max-width: 767px) {
     .yoyaku-player-ultra-fin .playlist-dropdown {
-        /* display: block !important; - DISABLED FOR TOGGLE */
+        display: block !important;
         visibility: visible !important;
         opacity: 1 !important;
         pointer-events: all !important;
@@ -1440,9 +1440,9 @@
 }
 
 /* Specific fixes for medium range 342-767px */
-@media (min-width: 390px) and (max-width: 767px) {
+@media (min-width: 342px) and (max-width: 767px) {
     .yoyaku-player-ultra-fin .playlist-dropdown {
-opacity: 0 !important;        transform: translateY(10px) !important;        pointer-events: none !important;        /* display: block !important; - DISABLED FOR TOGGLE */
+opacity: 0 !important;        transform: translateY(10px) !important;        pointer-events: none !important;        display: block !important;
         bottom: 60px !important;
         max-height: 200px !important;
         background: #1a1a1a !important;
@@ -1461,7 +1461,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 }
 
 /* Ultra small specific fixes */
-@media (max-width: 540px) {
+@media (max-width: 341px) {
     .yoyaku-player-ultra-fin .playlist-dropdown {
         bottom: 140px !important;  /* Above 3-line layout */
         margin: 0 5px !important;
@@ -1503,7 +1503,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 }
 
 /* Cart button size per breakpoint - NO CONFLICTS */
-@media (max-width: 540px) {
+@media (max-width: 341px) {
     .yoyaku-player-ultra-fin .cart-btn {
         width: 30px !important;
         height: 30px !important;
@@ -1514,7 +1514,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     }
 }
 
-@media (min-width: 541px) and (max-width: 389px) {
+@media (min-width: 342px) and (max-width: 389px) {
     .yoyaku-player-ultra-fin .cart-btn {
         width: 32px !important;
         height: 32px !important;
@@ -1580,7 +1580,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     
     .yoyaku-player-ultra-fin .product-line-1,
     .yoyaku-player-ultra-fin .product-line-2 {
-        /* display: block !important; - DISABLED FOR TOGGLE */
+        display: block !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
@@ -1589,7 +1589,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 }
 
 /* Medium range 342-479px - 2 lines layout optimization */
-@media (min-width: 541px) and (max-width: 479px) {
+@media (min-width: 342px) and (max-width: 479px) {
     .yoyaku-player-ultra-fin .player-inner {
         display: grid !important;
         grid-template-rows: 55px 55px !important;
@@ -1622,7 +1622,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 @media (min-width: 480px) and (max-width: 767px) {
     .yoyaku-player-ultra-fin .player-inner {
         display: grid !important;
-        grid-template-rows: 55px 65px !important;
+        grid-template-rows: 60px 60px !important;
         grid-template-columns: 55px 1fr auto !important;
         grid-template-areas: 
             "vinyl metadata controls"
@@ -1640,7 +1640,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 }
 
 /* Ultra small 341px and below - 3 lines compact */
-@media (max-width: 540px) {
+@media (max-width: 341px) {
     .yoyaku-player-ultra-fin .player-inner {
         display: grid !important;
         grid-template-rows: 40px 40px 50px !important;
@@ -1687,7 +1687,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
         width: 100% !important;
         min-width: 0 !important;
         height: auto !important;
-        /* display: block !important; - DISABLED FOR TOGGLE */
+        display: block !important;
         align-self: end !important; /* Stick to bottom of grid area */
         margin-top: auto !important; /* Push to bottom */
         background: transparent !important;
@@ -1698,20 +1698,20 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     .yoyaku-player-ultra-fin #waveform wave {
         width: 100% !important;
         height: 100% !important;
-        /* display: block !important; - DISABLED FOR TOGGLE */
+        display: block !important;
         overflow: visible !important;
     }
     
     .yoyaku-player-ultra-fin #waveform canvas {
         width: 100% !important;
         height: 40px !important; /* Consistent height on mobile */
-        /* display: block !important; - DISABLED FOR TOGGLE */
+        display: block !important;
         border-radius: 0 !important;
     }
 }
 
 /* Waveform specific fixes per breakpoint */
-@media (max-width: 540px) {
+@media (max-width: 341px) {
     .yoyaku-player-ultra-fin #waveform {
         margin-top: 5px !important;
         padding: 0 !important;
@@ -1722,7 +1722,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     }
 }
 
-@media (min-width: 541px) and (max-width: 479px) {
+@media (min-width: 342px) and (max-width: 479px) {
     .yoyaku-player-ultra-fin #waveform {
         margin-top: 3px !important;
         padding: 0 2px !important;
@@ -1767,7 +1767,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
         position: relative !important;
         width: 100% !important;
         height: auto !important;
-        /* display: block !important; - DISABLED FOR TOGGLE */
+        display: block !important;
         align-self: end !important;
     }
 }
@@ -1815,7 +1815,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 
 
 /* FIX BOUTONS SUPERPOSÉS MEDIUM RANGE - BENJAMIN ULTRATHINK */
-@media (min-width: 390px) and (max-width: 767px) {
+@media (min-width: 342px) and (max-width: 767px) {
     .yoyaku-player-ultra-fin .controls {
         gap: 15px !important; /* Augmenté de 4px à 15px */
         padding: 0 10px !important;
@@ -1865,12 +1865,12 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 
 
 /* FIX DROPDOWN MEDIUM - RÈGLE .open MANQUANTE */
-@media (min-width: 390px) and (max-width: 767px) {
+@media (min-width: 342px) and (max-width: 767px) {
     .yoyaku-player-ultra-fin .playlist-container.open .playlist-dropdown {
         opacity: 1 !important;
         transform: translateY(0) !important;
         pointer-events: all !important;
-        /* display: block !important; - DISABLED FOR TOGGLE */
+        display: block !important;
     }
 }
 
@@ -1906,128 +1906,5 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     
     .yoyaku-player-ultra-fin .playlist-item:hover {
         background: rgba(255,255,255,0.15) !important;
-    }
-}
-
-/* OPTIMISATION PLAY/PAUSE ALTERNANCE - BENJAMIN */
-.yoyaku-player-ultra-fin .btn-play,
-.yoyaku-player-ultra-fin .btn-pause {
-    position: relative !important;
-    /* display: block !important; - DISABLED FOR TOGGLE */
-    width: 16px !important;
-    height: 16px !important;
-    color: transparent !important;
-    font-size: 0 !important;
-    background: transparent !important;
-}
-
-/* Assurer que les ::after s_affichent */
-.yoyaku-player-ultra-fin .btn-play::after,
-.yoyaku-player-ultra-fin .btn-pause::after {
-    /* display: block !important; - DISABLED FOR TOGGLE */
-    pointer-events: none !important;
-}
-
-/* FIX TOGGLE PLAY/PAUSE - STANDARD MUSIC PLAYER LOGIC */
-.yoyaku-player-ultra-fin .btn-play,
-.yoyaku-player-ultra-fin .btn-pause {
-    position: relative !important;
-    width: 16px !important;
-    height: 16px !important;
-    color: transparent !important;
-    font-size: 0 !important;
-    background: transparent !important;
-    /* JavaScript contrôle display: none/block */
-}
-
-/* Les ::after s_affichent seulement si l_élément parent est visible */
-.yoyaku-player-ultra-fin .btn-play::after,
-.yoyaku-player-ultra-fin .btn-pause::after {
-    content:  !important;
-    display: block !important;
-    position: absolute !important;
-    top: 50% !important;
-    left: 50% !important;
-    transform: translate(-50%, -50%) !important;
-    width: 16px !important;
-    height: 16px !important;
-    background-size: contain !important;
-    background-repeat: no-repeat !important;
-    pointer-events: none !important;
-}
-
-/* FIX IPHONE SE (342-389px) - DROPDOWN & BOUTONS */
-@media (min-width: 541px) and (max-width: 389px) {
-    /* Dropdown fix pour iPhone SE */
-    .yoyaku-player-ultra-fin .playlist-dropdown {
-        opacity: 0 !important;
-        transform: translateY(10px) !important;
-        pointer-events: none !important;
-        bottom: 135px !important; /* Hauteur iPhone SE = 135px */
-        max-height: 200px !important;
-        background: #1a1a1a !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        color: #f5f5f5 !important;
-    }
-    
-    .yoyaku-player-ultra-fin .playlist-container.open .playlist-dropdown {
-        opacity: 1 !important;
-        transform: translateY(0) !important;
-        pointer-events: all !important;
-    }
-    
-    /* Boutons optimisés iPhone SE - préserver les tailles originales */
-    .yoyaku-player-ultra-fin .controls {
-        gap: 5px !important; /* Plus serré pour iPhone SE */
-        padding: 0 5px !important;
-    }
-    
-    .yoyaku-player-ultra-fin .control-btn.prev,
-    .yoyaku-player-ultra-fin .control-btn.next {
-        position: relative !important;
-        z-index: 5 !important;
-        opacity: 1 !important;
-        pointer-events: all !important;
-        /* Garder les tailles définies dans le breakpoint iPhone SE original */
-    }
-}
-
-/* FIX DROPDOWN SMALL - NE PAS OUVRIR PAR DÉFAUT */
-@media (max-width: 540px) {
-    .yoyaku-player-ultra-fin .playlist-dropdown {
-        opacity: 0 !important;
-        pointer-events: none !important;
-        display: none !important; /* Caché par défaut */
-    }
-    
-    .yoyaku-player-ultra-fin .playlist-container.open .playlist-dropdown {
-        opacity: 1 !important;
-        pointer-events: all !important;
-        display: block !important; /* Visible quand ouvert */
-        position: fixed !important;
-        bottom: 130px !important;
-        left: 0 !important;
-        right: 0 !important;
-        max-height: 300px !important;
-        overflow-y: auto !important;
-        background: #1a1a1a !important;
-        border: 1px solid rgba(255,255,255,0.2) !important;
-        z-index: 10000 !important;
-    }
-}
-
-/* FIX HAUTEUR WAVEFORM MEDIUM FINAL */
-@media (min-width: 480px) and (max-width: 767px) {
-    .yoyaku-player-ultra-fin .waveform-container {
-        height: 55px !important;
-        padding: 5px 15px !important;
-    }
-    
-    .yoyaku-player-ultra-fin #waveform {
-        height: 45px !important;
-    }
-    
-    .yoyaku-player-ultra-fin #waveform canvas {
-        height: 45px !important;
     }
 }

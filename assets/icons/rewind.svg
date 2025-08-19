@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<g id="Media / Rewind">
-<path id="Vector" d="M12 12L21 17V7L12 12ZM12 12V7L3 12L12 17V12Z" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
+<svg width="24px" height="24px" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 7L3 12L12 17V7Z" fill="white"/>
+<path d="M21 7L12 12L21 17V7Z" fill="white"/>
 </svg>

@@ -465,12 +465,12 @@ class YoyakuPlayerUltraFin {
                     // If player not loaded yet, load it first
                     if (!this.currentProduct || this.currentProduct.product_id != productId) {
                         this.loadProduct(productId).then(() => {
-                            this.loadTrack(trackIndex); setTimeout(() => this.play(), 500);
+                            this.loadTrack(trackIndex);
                             this.autoPlayAfterLoad = true;
                         });
                     } else {
                         // Player already loaded, just switch track
-                        this.loadTrack(trackIndex); setTimeout(() => this.play(), 500);
+                        this.loadTrack(trackIndex);
                         this.autoPlayAfterLoad = true;
                     }
                 }
