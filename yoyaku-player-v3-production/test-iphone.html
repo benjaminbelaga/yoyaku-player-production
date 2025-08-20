@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>YOYAKU Player - Test iPhone</title>
+    
+    <!-- Styles originaux -->
+    <link rel="stylesheet" href="assets/css/frontend.css">
+    <!-- Fix iPhone spécifique -->
+    <link rel="stylesheet" href="assets/css/frontend-iphone-fix.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .test-content {
+            padding: 20px;
+            padding-bottom: 140px; /* Espace pour le player */
+        }
+        
+        .test-product {
+            background: #2d2d2d;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .test-button {
+            background: #ffd700;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 0;
+            display: block;
+            width: 100%;
+        }
+        
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: #ffd700;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 999998;
+            max-width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-info" id="debug-info">
+        Screen: <span id="screen-size"></span><br>
+        UA: <span id="user-agent"></span><br>
+        Device: <span id="device-type"></span><br>
+        Viewport: <span id="viewport-size"></span>
+    </div>
+    
+    <div class="test-content">
+        <h1>🎵 YOYAKU Player - Test iPhone</h1>
+        
+        <div class="test-product">
+            <h2>Test Product 1</h2>
+            <p>Artist: Test Artist</p>
+            <p>Label: Test Label</p>
+            <button class="test-button fwap-play" data-product="123456">
+                🎵 Play Test Product
+            </button>
+        </div>
+        
+        <div class="test-product">
+            <h2>Instructions de test:</h2>
+            <ol>
+                <li>Cliquer sur "Play Test Product"</li>
+                <li>Vérifier que le player s'affiche en 2 lignes</li>
+                <li>Vérifier que le bouton panier est visible</li>
+                <li>Vérifier que la waveform va jusqu'au bout</li>
+                <li>Tester en mode portrait et paysage</li>
+            </ol>
+        </div>
+        
+        <div class="test-product">
+            <h2>🔧 Debug Controls</h2>
+            <button class="test-button" onclick="window.yoyakuIPhoneFix?.forceLayout()">
+                Force iPhone Layout
+            </button>
+            <button class="test-button" onclick="window.yoyakuIPhoneFix?.addDebug()">
+                Show Debug Info
+            </button>
+            <button class="test-button" onclick="togglePlayer()">
+                Toggle Player Visibility
+            </button>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script>
+        // Configuration YOYAKU Player
+        window.yoyaku_player_v3 = {
+            ajax_url: '#',
+            nonce: 'test-nonce',
+            current_product_id: '123456'
+        };
+        
+        // Mock data pour test
+        window.mockPlayerData = {
+            success: true,
+            data: {
+                product_id: '123456',
+                title: 'Test Album',
+                artist: 'Test Artist',
+                label: 'Test Label',
+                sku: 'TEST001',
+                cover: 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgZmlsbD0iIzMzMyIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIj5URVNUPC90ZXh0Pjwvc3ZnPg==',
+                tracks: [
+                    {
+                        name: 'Track A1 - Test Track 1',
+                        url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdCEOY4/C8ciMIKHvL8N+PQAoUXLDr766eFQtGn+Dww2YdCk...', // Base64 silence pour test
+                        bpm: '128'
+                    },
+                    {
+                        name: 'Track A2 - Test Track 2',
+                        url: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYdCEOY4/C8ciMIKHvL8N+PQAoUXLDr766eFQtGn+Dww2YdCk...',
+                        bpm: '130'
+                    }
+                ]
+            }
+        };
+        
+        // Mock fetch pour les tests
+        const originalFetch = window.fetch;
+        window.fetch = function(url, options) {
+            if (url.includes('yoyaku_player_v3_get_track')) {
+                return Promise.resolve({
+                    ok: true,
+                    text: () => Promise.resolve(JSON.stringify(window.mockPlayerData))
+                });
+            }
+            return originalFetch.apply(this, arguments);
+        };
+        
+        // Mise à jour des infos debug
+        function updateDebugInfo() {
+            document.getElementById('screen-size').textContent = `${screen.width}x${screen.height}`;
+            document.getElementById('user-agent').textContent = navigator.userAgent.substring(0, 30) + '...';
+            document.getElementById('device-type').textContent = window.yoyakuIPhoneFix ? 
+                (window.yoyakuIPhoneFix.isIPhone() ? 'iPhone' : window.yoyakuIPhoneFix.isMobile() ? 'Mobile' : 'Desktop') : 
+                'Detecting...';
+            document.getElementById('viewport-size').textContent = `${window.innerWidth}x${window.innerHeight}`;
+        }
+        
+        // Toggle player visibility pour debug
+        function togglePlayer() {
+            const player = document.getElementById('yoyaku-player');
+            if (player) {
+                player.style.display = player.style.display === 'none' ? '' : 'none';
+            }
+        }
+        
+        // Mise à jour périodique
+        setInterval(updateDebugInfo, 1000);
+        updateDebugInfo();
+        
+        // Log pour debug
+        console.log('🧪 Page de test YOYAKU Player chargée');
+        console.log('📱 Screen dimensions:', screen.width + 'x' + screen.height);
+        console.log('🔍 User Agent:', navigator.userAgent);
+        console.log('🌐 Viewport:', window.innerWidth + 'x' + window.innerHeight);
+    </script>
+    
+    <!-- Fix iPhone AVANT le player principal -->
+    <script src="assets/js/frontend-iphone-fix.js"></script>
+    <!-- Player principal -->
+    <script src="assets/js/frontend.js"></script>
+</body>
+</html>

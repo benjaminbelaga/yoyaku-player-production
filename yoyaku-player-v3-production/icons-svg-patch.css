@@ -1,0 +1,280 @@
+/* =============================================
+   YOYAKU PLAYER V3 - SVG ICONS & LAYOUT FIX
+   ============================================= */
+
+/* SVG ICON DEFINITIONS */
+:root {
+  /* Previous Icon */
+  --icon-prev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M6 6h2v12H6zm3.5 6l8.5 6V6z'/%3E%3C/svg%3E");
+  
+  /* Play Icon */  
+  --icon-play: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M8 5v14l11-7z'/%3E%3C/svg%3E");
+  
+  /* Pause Icon */
+  --icon-pause: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M6 19h4V5H6v14zm8-14v14h4V5h-4z'/%3E%3C/svg%3E");
+  
+  /* Next Icon */
+  --icon-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z'/%3E%3C/svg%3E");
+  
+  /* Volume Icon */
+  --icon-volume: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z'/%3E%3C/svg%3E");
+  
+  /* Pitch Icon */
+  --icon-pitch: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z'/%3E%3C/svg%3E");
+}
+
+/* DESKTOP LAYOUT FIX - Waveform takes more space */
+@media (min-width: 769px) {
+  .yoyaku-player-ultra-fin {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 0 15px !important;
+  }
+  
+  /* Vinyl compact */
+  .yoyaku-player-ultra-fin .vinyl-wrapper {
+    flex-shrink: 0 !important;
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  /* Product info compact */
+  .yoyaku-player-ultra-fin .product-info {
+    flex-shrink: 0 !important;
+    width: 150px !important;
+    min-width: 150px !important;
+  }
+  
+  /* Controls section compact with SVG icons */
+  .yoyaku-player-ultra-fin .controls-section {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* Control buttons with SVG */
+  .yoyaku-player-ultra-fin .control-btn {
+    width: 28px !important;
+    height: 28px !important;
+    background-color: transparent !important;
+    border: none !important;
+    cursor: pointer !important;
+    background-size: 20px 20px !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    opacity: 0.8 !important;
+    transition: opacity 0.2s !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn:hover {
+    opacity: 1 !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.prev {
+    background-image: var(--icon-prev) !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.play-pause .btn-play {
+    background-image: var(--icon-play) !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    font-size: 0 !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.play-pause.playing .btn-play {
+    background-image: var(--icon-pause) !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.next {
+    background-image: var(--icon-next) !important;
+  }
+  
+  /* Hide text in buttons */
+  .yoyaku-player-ultra-fin .control-btn span,
+  .yoyaku-player-ultra-fin .control-btn .btn-play::before,
+  .yoyaku-player-ultra-fin .control-btn .btn-pause::before {
+    display: none !important;
+  }
+  
+  /* Volume & Pitch Icons */
+  .yoyaku-player-ultra-fin .volume-control,
+  .yoyaku-player-ultra-fin .pitch-control {
+    position: relative !important;
+    width: 24px !important;
+    height: 24px !important;
+    margin-left: 8px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .volume-icon,
+  .yoyaku-player-ultra-fin .pitch-icon {
+    width: 24px !important;
+    height: 24px !important;
+    background-size: 18px 18px !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    cursor: pointer !important;
+    opacity: 0.8 !important;
+  }
+  
+  .yoyaku-player-ultra-fin .volume-icon {
+    background-image: var(--icon-volume) !important;
+  }
+  
+  .yoyaku-player-ultra-fin .pitch-icon {
+    background-image: var(--icon-pitch) !important;
+  }
+  
+  .yoyaku-player-ultra-fin .volume-icon:hover,
+  .yoyaku-player-ultra-fin .pitch-icon:hover {
+    opacity: 1 !important;
+  }
+  
+  /* Volume/Pitch Popup Sliders */
+  .yoyaku-player-ultra-fin .volume-popup,
+  .yoyaku-player-ultra-fin .pitch-popup {
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(0,0,0,0.9) !important;
+    padding: 10px !important;
+    border-radius: 4px !important;
+    display: none !important;
+    margin-bottom: 5px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .volume-control:hover .volume-popup,
+  .yoyaku-player-ultra-fin .pitch-control:hover .pitch-popup {
+    display: block !important;
+  }
+  
+  .yoyaku-player-ultra-fin .volume-slider,
+  .yoyaku-player-ultra-fin .pitch-slider {
+    width: 100px !important;
+    height: 4px !important;
+    -webkit-appearance: none !important;
+    background: #666 !important;
+    outline: none !important;
+    border-radius: 2px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .volume-slider::-webkit-slider-thumb,
+  .yoyaku-player-ultra-fin .pitch-slider::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    width: 12px !important;
+    height: 12px !important;
+    background: #fff !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+  }
+  
+  /* WAVEFORM TAKES MORE SPACE */
+  .yoyaku-player-ultra-fin .waveform-container {
+    flex-grow: 1 !important;
+    flex-shrink: 1 !important;
+    min-width: 0 !important;
+    height: 40px !important;
+    margin: 0 10px !important;
+  }
+  
+  /* Cart button stays round and compact */
+  .yoyaku-player-ultra-fin .cart-btn {
+    flex-shrink: 0 !important;
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50% !important;
+  }
+  
+  /* Playlist dropdown compact */
+  .yoyaku-player-ultra-fin .playlist-container {
+    flex-shrink: 0 !important;
+    margin-left: 8px !important;
+  }
+}
+
+/* MEDIUM FORMAT FIX 481-768px */
+@media (min-width: 481px) and (max-width: 768px) {
+  .yoyaku-player-ultra-fin {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 0 10px !important;
+    height: 48px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .vinyl-wrapper {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .product-info {
+    width: 120px !important;
+    min-width: 120px !important;
+    font-size: 11px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .controls-section {
+    display: flex !important;
+    gap: 2px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn {
+    width: 24px !important;
+    height: 24px !important;
+    background-size: 16px 16px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .waveform-container {
+    flex-grow: 1 !important;
+    height: 36px !important;
+    margin: 0 6px !important;
+  }
+  
+  .yoyaku-player-ultra-fin .cart-btn {
+    width: 32px !important;
+    height: 32px !important;
+  }
+  
+  /* Hide volume/pitch on medium to save space */
+  .yoyaku-player-ultra-fin .volume-control,
+  .yoyaku-player-ultra-fin .pitch-control {
+    display: none !important;
+  }
+}
+
+/* SMALL FORMAT ≤480px */
+@media (max-width: 480px) {
+  /* Keep existing 2-line layout but add icons */
+  .yoyaku-player-ultra-fin .control-btn {
+    width: 26px !important;
+    height: 26px !important;
+    background-size: 16px 16px !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.prev {
+    background-image: var(--icon-prev) !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.play-pause .btn-play {
+    background-image: var(--icon-play) !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.play-pause.playing .btn-play {
+    background-image: var(--icon-pause) !important;
+  }
+  
+  .yoyaku-player-ultra-fin .control-btn.next {
+    background-image: var(--icon-next) !important;
+  }
+  
+  /* Hide volume/pitch on small */
+  .yoyaku-player-ultra-fin .volume-control,
+  .yoyaku-player-ultra-fin .pitch-control {
+    display: none !important;
+  }
+}

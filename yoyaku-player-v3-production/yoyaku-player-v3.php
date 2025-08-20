@@ -20,6 +20,17 @@ class YoyakuPlayerV3 {
         
         // Pass current product ID to JavaScript on product pages
         add_action('wp_footer', [$this, 'add_product_id_to_js']);
+        
+        // BENJAMIN FIX: Add viewport meta tag for iPhone responsive
+        add_action('wp_head', [$this, 'add_viewport_meta_tag'], 1);
+    }
+    
+    // BENJAMIN FIX: Viewport meta tag CRUCIAL pour iPhone
+    public function add_viewport_meta_tag() {
+        // Vérifier si le tag existe déjà
+        if (!has_action('wp_head', 'wp_viewport_meta')) {
+            echo '<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">' . "\n";
+        }
     }
     
     public function enqueue_scripts() {

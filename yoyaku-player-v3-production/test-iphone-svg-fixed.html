@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>YOYAKU Player - Test iPhone SVG Fix</title>
+    <link rel="stylesheet" href="assets/css/frontend-FINAL.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            padding-top: 50px;
+        }
+        
+        .test-info {
+            text-align: center;
+            padding: 20px;
+            background: #2d2d2d;
+            margin: 20px;
+            border-radius: 8px;
+        }
+        
+        .test-result {
+            margin: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .success {
+            background: #0d5016;
+            border: 1px solid #2ea043;
+        }
+        
+        .warning {
+            background: #4d2d00;
+            border: 1px solid #da8500;
+        }
+        
+        .debug-grid {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(255,0,0,0.8);
+            color: white;
+            padding: 5px;
+            font-size: 10px;
+            z-index: 99999;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debug-grid" id="debugInfo">
+        Loading...
+    </div>
+    
+    <div class="test-info">
+        <h1>🎵 YOYAKU Player iPhone SVG Fix</h1>
+        <p><strong>Test:</strong> SVG Base64 vs Emoji Fallback</p>
+        <p><strong>Device:</strong> <span id="deviceInfo">Détection...</span></p>
+        <p><strong>Status:</strong> <span id="testStatus">En cours...</span></p>
+    </div>
+    
+    <div class="test-result" id="testResult">
+        Initialisation du test...
+    </div>
+
+    <!-- YOYAKU PLAYER ULTRA-FIN -->
+    <div class="yoyaku-player-ultra-fin active">
+        <div class="player-inner">
+            <!-- Vinyl Cover -->
+            <div class="vinyl-cover">
+                <div class="vinyl-wrapper">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMjAiIGZpbGw9IiMzMzMiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMTUiIGZpbGw9IiMyMjIiLz4KPGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMyIgZmlsbD0iIzExMSIvPgo8L3N2Zz4K" alt="Vinyl" class="vinyl-image">
+                </div>
+            </div>
+            
+            <!-- Playlist Info -->
+            <div class="playlist-container">
+                <div class="playlist-info">
+                    <div class="product-line-1">Test SVG Icons Fix</div>
+                    <div class="product-line-2">iPhone Safari Compatibility</div>
+                </div>
+            </div>
+            
+            <!-- Controls with SVG -->
+            <div class="player-controls">
+                <button class="control-btn prev" title="Précédent"></button>
+                <button class="control-btn play-pause btn-play" title="Play/Pause"></button>
+                <button class="control-btn next" title="Suivant"></button>
+            </div>
+            
+            <!-- Cart Button -->
+            <button class="cart-btn" title="Ajouter au panier">🛒</button>
+        </div>
+    </div>
+
+    <script>
+        // Debug Info
+        function updateDebugInfo() {
+            const debugDiv = document.getElementById('debugInfo');
+            const deviceInfo = document.getElementById('deviceInfo');
+            const testStatus = document.getElementById('testStatus');
+            const testResult = document.getElementById('testResult');
+            
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+            const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent);
+            const viewport = `${window.innerWidth}x${window.innerHeight}`;
+            const dpr = window.devicePixelRatio || 1;
+            
+            debugDiv.innerHTML = `W:${window.innerWidth} H:${window.innerHeight} DPR:${dpr}`;
+            
+            deviceInfo.innerHTML = `${navigator.userAgent.includes('iPhone') ? 'iPhone' : 'Other'} | Safari: ${isSafari}`;
+            
+            // Test SVG Support
+            const svgSupport = CSS.supports('background-image', 'url("data:image/svg+xml;base64,PHN2Zw==")');
+            const utf8Support = CSS.supports('background-image', 'url("data:image/svg+xml;utf8,<svg></svg>")');
+            
+            let resultHTML = '';
+            
+            if (svgSupport) {
+                testStatus.innerHTML = '✅ SVG Base64 Supporté';
+                testStatus.className = 'success';
+                resultHTML = `
+                    ✅ <strong>SUCCÈS:</strong> SVG Base64 fonctionne sur cet appareil<br>
+                    📱 Appareil: ${isIOS ? 'iOS' : 'Autre'} | Safari: ${isSafari}<br>
+                    🎨 Les icônes devraient être des SVG propres, pas des emojis<br>
+                    📊 SVG Base64 Support: ${svgSupport}<br>
+                    📊 SVG UTF-8 Support: ${utf8Support}<br>
+                    📏 Viewport: ${viewport} | DPR: ${dpr}
+                `;
+                testResult.className = 'test-result success';
+            } else {
+                testStatus.innerHTML = '⚠️ Fallback Activé';
+                testStatus.className = 'warning';
+                resultHTML = `
+                    ⚠️ <strong>FALLBACK:</strong> SVG non supporté, utilisation du fallback<br>
+                    📱 Appareil: ${isIOS ? 'iOS' : 'Autre'} | Safari: ${isSafari}<br>
+                    🎨 Les icônes utilisent le fallback (◀◀ ▶ ▶▶ ❚❚)<br>
+                    📊 SVG Base64 Support: ${svgSupport}<br>
+                    📊 SVG UTF-8 Support: ${utf8Support}<br>
+                    📏 Viewport: ${viewport} | DPR: ${dpr}
+                `;
+                testResult.className = 'test-result warning';
+            }
+            
+            testResult.innerHTML = resultHTML;
+        }
+        
+        // Button functionality for testing
+        document.querySelector('.btn-play').addEventListener('click', function() {
+            if (this.classList.contains('btn-play')) {
+                this.classList.remove('btn-play');
+                this.classList.add('btn-pause');
+                this.title = 'Pause';
+            } else {
+                this.classList.remove('btn-pause');
+                this.classList.add('btn-play');
+                this.title = 'Play';
+            }
+        });
+        
+        // Initialize
+        updateDebugInfo();
+        
+        // Update on resize
+        window.addEventListener('resize', updateDebugInfo);
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateDebugInfo, 100);
+        });
+    </script>
+</body>
+</html>

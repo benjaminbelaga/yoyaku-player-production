@@ -1,4 +1,248 @@
 /**
+ * YOYAKU Player - iPhone Detection & Fix Robuste
+ * Détection iPhone plus précise et application forcée du layout mobile
+ */
+
+(function() {
+    'use strict';
+    
+    console.log('🍎 iPhone Fix Script chargé');
+    
+    // Détection iPhone ultra-robuste
+    function isIPhone() {
+        const userAgent = navigator.userAgent.toLowerCase();
+        const platform = navigator.platform.toLowerCase();
+        const vendor = navigator.vendor.toLowerCase();
+        
+        // Vérifications multiples
+        const checks = [
+            /iphone/.test(userAgent),
+            /ipod/.test(userAgent),
+            /iphone/.test(platform),
+            /ipod/.test(platform),
+            vendor.includes('apple') && /mobile/.test(userAgent),
+            'ontouchstart' in window && /safari/.test(userAgent) && !/chrome/.test(userAgent)
+        ];
+        
+        const isIPhoneDevice = checks.some(check => check);
+        
+        console.log('🍎 iPhone Detection:', {
+            userAgent: userAgent,
+            platform: platform,
+            vendor: vendor,
+            checks: checks,
+            result: isIPhoneDevice
+        });
+        
+        return isIPhoneDevice;
+    }
+    
+    // Détection mobile générale
+    function isMobile() {
+        const width = window.innerWidth || document.documentElement.clientWidth;
+        const userAgent = navigator.userAgent.toLowerCase();
+        
+        const isMobileWidth = width <= 768;
+        const isMobileUA = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent);
+        const isTouchDevice = 'ontouchstart' in window;
+        
+        const result = isMobileWidth || isMobileUA || isTouchDevice;
+        
+        console.log('📱 Mobile Detection:', {
+            width: width,
+            isMobileWidth: isMobileWidth,
+            isMobileUA: isMobileUA,
+            isTouchDevice: isTouchDevice,
+            result: result
+        });
+        
+        return result;
+    }
+    
+    // Force l'application des classes mobile
+    function forceIPhoneLayout() {
+        const player = document.getElementById('yoyaku-player') || document.querySelector('.yoyaku-player-ultra-fin');
+        
+        if (!player) {
+            console.log('⚠️ Player non trouvé, retry dans 500ms');
+            setTimeout(forceIPhoneLayout, 500);
+            return;
+        }
+        
+        console.log('🍎 Application forcée du layout iPhone');
+        
+        // Supprimer toutes les classes existantes
+        player.classList.remove('mobile-layout', 'iphone-device', 'desktop-layout');
+        
+        // Ajouter les classes appropriées
+        if (isIPhone()) {
+            player.classList.add('iphone-device', 'mobile-layout');
+            console.log('✅ Classes iPhone appliquées');
+        } else if (isMobile()) {
+            player.classList.add('mobile-layout');
+            console.log('✅ Classe mobile appliquée');
+        }
+        
+        // Force le recalcul du layout
+        player.style.display = 'none';
+        player.offsetHeight; // Force reflow
+        player.style.display = '';
+        
+        // Debug: Afficher les classes appliquées
+        console.log('📋 Classes finales:', player.classList.toString());
+        
+        // Ajouter un indicateur de debug temporaire
+        if (isIPhone()) {
+            addDebugIndicator();
+        }
+    }
+    
+    // Ajouter un indicateur de debug
+    function addDebugIndicator() {
+        // Supprimer ancien indicateur
+        const existingDebug = document.querySelector('.debug-iphone-player');
+        if (existingDebug) {
+            existingDebug.remove();
+        }
+        
+        const debug = document.createElement('div');
+        debug.className = 'debug-iphone-player';
+        debug.innerHTML = `
+            iPhone: ${isIPhone() ? '✅' : '❌'}<br>
+            Mobile: ${isMobile() ? '✅' : '❌'}<br>
+            Screen: ${window.innerWidth}x${window.innerHeight}<br>
+            UA: ${navigator.userAgent.substring(0, 20)}...
+        `;
+        
+        document.body.appendChild(debug);
+        
+        // Supprimer après 5 secondes
+        setTimeout(() => {
+            debug.remove();
+        }, 5000);
+    }
+    
+    // Force le viewport meta tag si absent
+    function ensureViewportMeta() {
+        let viewport = document.querySelector('meta[name="viewport"]');
+        
+        if (!viewport) {
+            console.log('📱 Ajout du viewport meta tag');
+            viewport = document.createElement('meta');
+            viewport.name = 'viewport';
+            viewport.content = 'width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover';
+            document.head.appendChild(viewport);
+        } else {
+            // Mettre à jour le viewport existant
+            console.log('📱 Mise à jour du viewport meta tag');
+            viewport.content = 'width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover';
+        }
+    }
+    
+    // Fonction d'initialisation
+    function initIPhoneFix() {
+        console.log('🚀 Initialisation iPhone Fix');
+        
+        // Assurer le viewport
+        ensureViewportMeta();
+        
+        // Forcer le layout immédiatement
+        forceIPhoneLayout();
+        
+        // Re-forcer après changement d'orientation
+        window.addEventListener('orientationchange', function() {
+            console.log('🔄 Changement orientation détecté');
+            setTimeout(() => {
+                forceIPhoneLayout();
+            }, 300);
+        });
+        
+        // Re-forcer après resize
+        window.addEventListener('resize', function() {
+            console.log('🔄 Resize détecté');
+            setTimeout(() => {
+                forceIPhoneLayout();
+            }, 300);
+        });
+        
+        // Observer le DOM pour les changements du player
+        if (window.MutationObserver) {
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'childList') {
+                        const addedNodes = Array.from(mutation.addedNodes);
+                        const hasPlayer = addedNodes.some(node => 
+                            node.nodeType === 1 && 
+                            (node.id === 'yoyaku-player' || node.classList?.contains('yoyaku-player-ultra-fin'))
+                        );
+                        
+                        if (hasPlayer) {
+                            console.log('🎵 Player ajouté au DOM, application du fix');
+                            setTimeout(forceIPhoneLayout, 100);
+                        }
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        }
+    }
+    
+    // Patcher la classe YoyakuPlayerUltraFin si elle existe
+    function patchPlayerClass() {
+        if (window.YoyakuPlayerUltraFin) {
+            console.log('🔧 Patching YoyakuPlayerUltraFin.createPlayerHTML');
+            
+            const originalCreatePlayerHTML = window.YoyakuPlayerUltraFin.prototype.createPlayerHTML;
+            
+            window.YoyakuPlayerUltraFin.prototype.createPlayerHTML = function() {
+                // Appeler la méthode originale
+                originalCreatePlayerHTML.call(this);
+                
+                // Forcer le layout après création
+                setTimeout(() => {
+                    forceIPhoneLayout();
+                }, 100);
+            };
+        }
+    }
+    
+    // Démarrage selon l'état du DOM
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initIPhoneFix);
+    } else {
+        initIPhoneFix();
+    }
+    
+    // Patcher après le chargement complet
+    window.addEventListener('load', function() {
+        patchPlayerClass();
+        
+        // Force finale après 2 secondes
+        setTimeout(() => {
+            console.log('🏁 Force finale du layout iPhone');
+            forceIPhoneLayout();
+        }, 2000);
+    });
+    
+    // Exposer les fonctions pour debug
+    window.yoyakuIPhoneFix = {
+        isIPhone: isIPhone,
+        isMobile: isMobile,
+        forceLayout: forceIPhoneLayout,
+        addDebug: addDebugIndicator
+    };
+    
+    console.log('✅ iPhone Fix Script initialisé');
+    
+})();
+/* ============================================== */
+/*   PLAYER PRINCIPAL - AUTO-INTEGRÉ 2025-08-16   */
+/* ============================================== */
+/**
  * YOYAKU Player V3 ULTRA-FIN
  * Height: 48px desktop, 42px mobile
  * WaveSurfer.js v7 with CDN failover
@@ -15,8 +259,6 @@ class YoyakuPlayerUltraFin {
         this.pitch = 0;
         this.tracks = [];
         this.autoPlayAfterLoad = true;
-        this.currentProductId = null;
-        this.currentProductUrl = null;
         
         // Try WaveSurfer first, fallback to HTML5
         this.useHTML5Audio = false;
@@ -65,28 +307,8 @@ class YoyakuPlayerUltraFin {
             }
             
         } catch (error) {
-            console.error('❌ CRITICAL: WaveSurfer loading failed:', error);
-            console.log('🔄 Retrying WaveSurfer load with force...');
-            
-            // BENJAMIN FIX: Force retry and never fallback to HTML5
-            try {
-                // Force reload from different CDN
-                await this.loadScript('https://cdn.skypack.dev/wavesurfer.js@7');
-                console.log('✅ WaveSurfer loaded from skypack');
-                this.useHTML5Audio = false;
-            } catch (e2) {
-                console.error('❌ All WaveSurfer CDNs failed, trying local fallback');
-                // Last attempt: try to use any existing WaveSurfer
-                if (window.WaveSurfer) {
-                    console.log('✅ Using existing WaveSurfer instance');
-                    this.useHTML5Audio = false;
-                } else {
-                    console.error('🚫 CRITICAL: No WaveSurfer available - FORCING MANUAL LOAD');
-                    // Show user a manual retry button
-                    this.showWaveSurferError();
-                    this.useHTML5Audio = false; // Still try WaveSurfer mode
-                }
-            }
+            console.warn('WaveSurfer loading failed, using HTML5 audio mode');
+            this.useHTML5Audio = true;
         }
     }
     
@@ -94,52 +316,10 @@ class YoyakuPlayerUltraFin {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');
             script.src = src;
-            script.onload = () => {
-                console.log('✅ Script loaded successfully:', src);
-                resolve();
-            };
-            script.onerror = (error) => {
-                console.error('❌ Script load failed:', src, error);
-                reject(error);
-            };
-            script.async = false; // Force synchronous loading
+            script.onload = resolve;
+            script.onerror = reject;
             document.head.appendChild(script);
         });
-    }
-    
-    // BENJAMIN NEW: Force WaveSurfer reload method
-    async forceReloadWaveSurfer() {
-        console.log('🔄 Force reloading WaveSurfer...');
-        
-        // Remove any existing WaveSurfer scripts
-        document.querySelectorAll('script[src*="wavesurfer"]').forEach(s => s.remove());
-        
-        try {
-            await this.loadScript('https://unpkg.com/wavesurfer.js@7.8.0/dist/wavesurfer.umd.min.js');
-            console.log('✅ WaveSurfer force reload successful');
-            
-            // Retry initialization
-            setTimeout(() => {
-                this.initWaveSurfer();
-            }, 500);
-        } catch (error) {
-            console.error('❌ Force reload failed:', error);
-            this.showWaveSurferError();
-        }
-    }
-    
-    // BENJAMIN NEW: Show WaveSurfer error to user
-    showWaveSurferError() {
-        const errorDiv = document.createElement('div');
-        errorDiv.style.cssText = 'position: fixed; top: 20px; left: 20px; background: red; color: white; padding: 10px; border-radius: 5px; z-index: 99999; font-size: 12px;';
-        errorDiv.innerHTML = '❌ WaveSurfer failed to load<br><button onclick="location.reload()">Reload Page</button>';
-        document.body.appendChild(errorDiv);
-        
-        setTimeout(() => {
-            if (errorDiv.parentNode) {
-                document.body.removeChild(errorDiv);
-            }
-        }, 10000);
     }
     
     createPlayerHTML() {
@@ -253,31 +433,12 @@ class YoyakuPlayerUltraFin {
     }
     
     initWaveSurfer() {
-        console.log('🌊 FORCING WaveSurfer initialization...');
-        
-        // BENJAMIN EMERGENCY FIX: Never use HTML5 - always force WaveSurfer
-        if (!window.WaveSurfer) {
-            console.error('❌ CRITICAL: WaveSurfer not loaded! Forcing reload...');
-            this.forceReloadWaveSurfer();
+        if (this.useHTML5Audio || !window.WaveSurfer) {
+            this.initHTML5Audio();
             return;
         }
         
-        console.log('✅ WaveSurfer available, proceeding with initialization');
-        this.useHTML5Audio = false; // Force WaveSurfer mode
-        
-        // FIX BENJAMIN: Définir screenWidth dans le bon contexte
-        const screenWidth = window.innerWidth || document.documentElement.clientWidth || screen.width;
-        const userAgent = navigator.userAgent.toLowerCase();
-        const isIPhone = /iphone|ipod/.test(userAgent) || 
-                         (navigator.vendor && navigator.vendor.toLowerCase().includes('apple') && /mobile/.test(userAgent));
-        
         try {
-            // BENJAMIN DEBUG: Vérifier le conteneur avant initialisation
-            const waveformContainer = document.getElementById('waveform');
-            console.log('🌊 DEBUG WAVEFORM: Container exists?', !!waveformContainer);
-            console.log('🌊 DEBUG WAVEFORM: Container visible?', waveformContainer ? waveformContainer.offsetWidth + 'x' + waveformContainer.offsetHeight : 'N/A');
-            console.log('🌊 DEBUG WAVEFORM: Screen size:', screenWidth, 'Mobile:', screenWidth <= 768, 'iPhone:', isIPhone);
-            
             this.wavesurfer = WaveSurfer.create({
                 container: '#waveform',
                 waveColor: 'rgba(255, 255, 255, 0.3)',
@@ -538,28 +699,10 @@ class YoyakuPlayerUltraFin {
             }
         });
         
-        // Player controls - FIXED SELECTORS
-        const playPauseBtn = document.querySelector('.control-btn.play-pause');
-        const prevBtn = document.querySelector('.control-btn.prev');
-        const nextBtn = document.querySelector('.control-btn.next');
-        
-        if (playPauseBtn) playPauseBtn.addEventListener('click', () => this.togglePlayPause());
-        if (prevBtn) prevBtn.addEventListener('click', () => this.previousTrack());
-        if (nextBtn) nextBtn.addEventListener('click', () => this.nextTrack());
-        
-        // BENJAMIN NEW: Click on vinyl image to go to product
-        const vinylImage = document.querySelector('.vinyl-image');
-        if (vinylImage) {
-            vinylImage.style.cursor = 'pointer';
-            vinylImage.addEventListener('click', () => {
-                if (this.currentProductUrl) {
-                    console.log('🎵 Redirecting to product:', this.currentProductUrl);
-                    window.open(this.currentProductUrl, '_blank');
-                } else {
-                    console.warn('❌ No product URL available');
-                }
-            });
-        }
+        // Player controls
+        document.querySelector('.play-pause').addEventListener('click', () => this.togglePlayPause());
+        document.querySelector('.prev').addEventListener('click', () => this.previousTrack());
+        document.querySelector('.next').addEventListener('click', () => this.nextTrack());
         
         // Playlist toggle
         document.querySelector('.playlist-toggle').addEventListener('click', () => {
@@ -679,25 +822,6 @@ class YoyakuPlayerUltraFin {
                 this.tracks = data.data.tracks;
                 this.currentTrackIndex = 0;
                 
-                // BENJAMIN NEW: Store product URL for vinyl click
-                this.currentProductId = productId;
-                
-                // Try to find the product URL from the page context
-                const currentUrl = window.location.href;
-                if (currentUrl.includes('/product/') || currentUrl.includes('/?p=')) {
-                    // We're on a product page, use current URL
-                    this.currentProductUrl = currentUrl;
-                } else {
-                    // Try to construct URL from data
-                    if (data.data.product_url) {
-                        this.currentProductUrl = data.data.product_url;
-                    } else {
-                        // Fallback: construct WooCommerce product URL
-                        this.currentProductUrl = window.location.origin + '/?p=' + productId;
-                    }
-                }
-                
-                console.log('🔗 Product URL stored:', this.currentProductUrl);
                 console.log('Tracks loaded:', this.tracks.length, 'tracks');
 // YOYAKU: Enhanced validation and UI state management                if (this.tracks.length === 0) {                    console.warn("[YOYAKU WARNING] No tracks found for product", productId);                    this.showStatus("No tracks available");                    reject(new Error("No tracks available"));                    return;                }                                // Ensure UI elements exist before updating                const playerElement = document.getElementById("yoyaku-player");                const vinylImage = document.querySelector(".vinyl-image");                                if (playerElement) {                    playerElement.classList.add("active");                    console.log("[YOYAKU] Player activated successfully");                } else {                    console.error("[YOYAKU ERROR] Player element not found!");                }                                if (vinylImage && data.data.cover) {                    vinylImage.src = data.data.cover;                    console.log("[YOYAKU] Cover image updated:", data.data.cover);                }
                 
@@ -750,23 +874,10 @@ class YoyakuPlayerUltraFin {
         
         console.log(`🎵 Loading track ${index + 1}/${this.tracks.length}: ${this.tracks[index].name}`);
         
-        // BENJAMIN EMERGENCY: Force complete stop + reset state
-        console.log('🚫 EMERGENCY: Force stopping current track...');
-        
-        // Force stop everything
-        this.isPlaying = false;
-        if (this.wavesurfer) {
-            try {
-                this.wavesurfer.stop();
-                this.wavesurfer.pause();
-                console.log('✅ WaveSurfer stopped completely');
-            } catch (e) {
-                console.warn('Stop error:', e);
-            }
+        // IMPORTANT: Stop current playback before loading new track
+        if (this.isPlaying) {
+            this.pause();
         }
-        
-        // Update UI immediately - Force paused state
-        console.log('✅ Player state reset to paused');
         
         this.currentTrackIndex = index;
         const track = this.tracks[index];
@@ -812,45 +923,17 @@ class YoyakuPlayerUltraFin {
             console.log('Loading track with waveform:', track.url);
             this.showStatus('Loading waveform...');
             
-            // BENJAMIN EMERGENCY FIX: Force complete backend reset
+            // BENJAMIN FIX: Clean stop avant nouveau track
             try {
-                console.log('🔄 EMERGENCY: Force resetting WaveSurfer backend...');
-                
-                // 1. Complete stop
                 this.wavesurfer.stop();
-                this.wavesurfer.pause();
-                
-                // 2. CRITICAL: Force backend buffer clear
-                if (this.wavesurfer.backend) {
-                    if (this.wavesurfer.backend.buffer) {
-                        this.wavesurfer.backend.buffer = null;
-                    }
-                    if (this.wavesurfer.backend.source) {
-                        try {
-                            this.wavesurfer.backend.source.disconnect();
-                        } catch (e) {}
-                        this.wavesurfer.backend.source = null;
-                    }
-                    console.log('🗑️ Backend completely cleared');
-                }
-                
-                // 3. Empty waveform display
                 this.wavesurfer.empty();
-                
-                // 4. CRITICAL: Wait for complete reset (using setTimeout instead of await)
-                setTimeout(() => {
-                    console.log('✅ WaveSurfer EMERGENCY cleared after timeout');
-                }, 200);
+                console.log('✅ WaveSurfer cleared for new track');
             } catch (error) {
-                console.error('❌ Error clearing WaveSurfer:', error);
+                console.warn('⚠️ Error clearing WaveSurfer:', error);
             }
             
-            // BENJAMIN EMERGENCY: Load with complete reset
-            console.log('🎵 EMERGENCY loading new track:', track.url);
-            
-            // Force load with unique cache buster
-            const uniqueUrl = track.url + '?emergency=' + Date.now() + Math.random();
-            this.wavesurfer.load(uniqueUrl);
+            // Load new track with cache busting
+            this.wavesurfer.load(track.url + '?t=' + Date.now());
         } else if (this.audio) {
             console.log('🔄 Loading HTML5 audio source:', track.url);
             this.audio.src = track.url;
@@ -866,324 +949,32 @@ class YoyakuPlayerUltraFin {
         }
     }
     
-    // BENJAMIN EMERGENCY FIX: Méthode centralisée pour l'autoplay
+    // BENJAMIN FIX: Méthode centralisée pour l'autoplay
     async handleAutoplayAfterReady() {
-        if (this.autoPlayAfterLoad) {
-            console.log("🎵 SIMPLE AUTOPLAY - NO BACKEND CHECKS");
-            this.autoPlayAfterLoad = false;
-            
-            // BENJAMIN ULTRA-SIMPLE: Just play without ANY backend verification
-            if (!this.isPlaying && this.wavesurfer) {
-                try {
-                    await this.play();
-                    console.log("✅ Simple autoplay success");
-                } catch (error) {
-                    console.log("❌ Autoplay failed but NOT retrying:", error);
-                }
-            }
-        }
-    }
-    
-    // REMOVE ALL COMPLEX MOBILE STUFF THAT CAUSES LOOPS
-    async handleAutoplayAfterReady_OLD_COMPLEX() {
         if (this.autoPlayAfterLoad) {
             console.log("🎵 Starting autoplay after ready...");
             this.autoPlayAfterLoad = false;
             
-            // Simple wait - no complex checks
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // BENJAMIN SIMPLE: Basic WaveSurfer check only
-            if (!this.wavesurfer) {
-                console.error('❌ WaveSurfer not available');
-                return;
-            }
-            
-            // Enhanced mobile detection
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-            
+            // Délai pour stabilité et éviter les conflits
             setTimeout(async () => {
                 try {
-                    // CRITICAL MOBILE FIX: Force AudioContext resume with multiple strategies
+                    // Ensure AudioContext is resumed for WaveSurfer
                     if (this.wavesurfer && this.wavesurfer.backend && this.wavesurfer.backend.ac) {
-                        const audioContext = this.wavesurfer.backend.ac;
-                        
-                        // Strategy 1: Always resume AudioContext
-                        if (audioContext.state === 'suspended') {
-                            console.log("🔊 Resuming suspended AudioContext");
-                            try {
-                                await audioContext.resume();
-                                console.log("✅ AudioContext resumed, state:", audioContext.state);
-                            } catch (resumeError) {
-                                console.warn('❌ AudioContext resume failed:', resumeError);
-                            }
-                        }
-                        
-                        // Strategy 2: For mobile, create new AudioContext if still suspended
-                        if (isMobile && audioContext.state === 'suspended') {
-                            console.log("📱 Mobile AudioContext still suspended, attempting reset");
-                            try {
-                                // Force a new audio buffer decode to wake up the context
-                                const buffer = audioContext.createBuffer(1, 1, 22050);
-                                const source = audioContext.createBufferSource();
-                                source.buffer = buffer;
-                                source.connect(audioContext.destination);
-                                source.start(0);
-                                
-                                // Wait a moment then try resume again
-                                await new Promise(resolve => setTimeout(resolve, 100));
-                                if (audioContext.state === 'suspended') {
-                                    await audioContext.resume();
-                                }
-                                console.log("✅ Mobile AudioContext forced resume, state:", audioContext.state);
-                            } catch (mobileError) {
-                                console.warn('❌ Mobile AudioContext reset failed:', mobileError);
-                            }
+                        if (this.wavesurfer.backend.ac.state === 'suspended') {
+                            console.log("🔊 Resuming AudioContext for autoplay");
+                            await this.wavesurfer.backend.ac.resume();
                         }
                     }
                     
-                    // BENJAMIN SIMPLE: Just play without complex checks
+                    // Clean state check before autoplay
                     if (!this.isPlaying) {
-                        if (isMobile) {
-                            console.log('📱 Mobile autoplay attempt');
-                            
-                            // iOS specific: simulate touch event to unlock audio
-                            if (isIOS) {
-                                console.log('🍎 iOS detected, simulating touch unlock');
-                                
-                                // Create silent touch event to unlock audio
-                                try {
-                                    if (this.audio) {
-                                        this.audio.muted = true;
-                                        await this.audio.play();
-                                        this.audio.pause();
-                                        this.audio.muted = false;
-                                        this.audio.currentTime = 0;
-                                    }
-                                } catch (unlockError) {
-                                    console.warn('iOS audio unlock failed:', unlockError);
-                                }
-                            }
-                            
-                            // Attempt direct play for mobile (works after first user interaction)
-                            try {
-                                await this.play();
-                                console.log('✅ Mobile direct autoplay succeeded');
-                            } catch (mobilePlayError) {
-                                console.warn('📱 Mobile autoplay blocked:', mobilePlayError.name);
-                                
-                                // Only show UI prompt if this is the very first track
-                                if (this.currentTrackIndex === 0) {
-                                    this.showMobilePlayPrompt();
-                                } else {
-                                    // For track auto-advance, try alternative method
-                                    console.log('🔄 Attempting mobile track advance play');
-                                    this.attemptMobileTrackAdvancePlay();
-                                }
-                            }
-                        } else {
-                            // Desktop: standard play method
-                            await this.play();
-                            console.log('✅ Desktop autoplay succeeded');
-                        }
+                        await this.play();
                     }
                 } catch (error) {
                     console.error('❌ Autoplay failed:', error);
                 }
-            }, isMobile ? 300 : 100); // Optimized timing
+            }, 200); // Réduit le délai pour plus de réactivité
         }
-    }
-    
-    // BENJAMIN FIX: Mobile-specific track advance play method - FORCE REAL AUDIO
-    attemptMobileTrackAdvancePlay() {
-        console.log('🔄 Attempting mobile track advance play...');
-        
-        // CRITICAL MOBILE FIX: Multiple strategies to FORCE real audio
-        const forceRealMobileAudio = async () => {
-            let audioContext = null;
-            
-            // Strategy 1: Force AudioContext unlock with REAL sound test
-            if (this.wavesurfer && this.wavesurfer.backend && this.wavesurfer.backend.ac) {
-                audioContext = this.wavesurfer.backend.ac;
-                console.log('🔊 Initial AudioContext state:', audioContext.state);
-                
-                // FORCE multiple resume with real sound test
-                for (let attempt = 0; attempt < 5; attempt++) {
-                    try {
-                        if (audioContext.state !== 'running') {
-                            await audioContext.resume();
-                            console.log(`🔊 Attempt ${attempt + 1}: AudioContext state:`, audioContext.state);
-                        }
-                        
-                        // REAL SOUND TEST: Create and play actual audible buffer
-                        if (audioContext.state === 'running') {
-                            const testBuffer = audioContext.createBuffer(1, 22050, 22050); // 1 second
-                            const data = testBuffer.getChannelData(0);
-                            
-                            // Generate a very brief, low-volume sine wave (440Hz = A note)
-                            for (let i = 0; i < 2205; i++) { // 0.1 second of audio
-                                data[i] = Math.sin(2 * Math.PI * 440 * i / 22050) * 0.01; // Very quiet
-                            }
-                            
-                            const testSource = audioContext.createBufferSource();
-                            testSource.buffer = testBuffer;
-                            testSource.connect(audioContext.destination);
-                            testSource.start(0);
-                            
-                            console.log('✅ Real audio test played successfully');
-                            await new Promise(resolve => setTimeout(resolve, 150)); // Wait for test sound
-                            break;
-                        }
-                    } catch (error) {
-                        console.warn(`Audio unlock attempt ${attempt + 1} failed:`, error);
-                        await new Promise(resolve => setTimeout(resolve, 100));
-                    }
-                }
-            }
-            
-            // Strategy 2: Force new WaveSurfer play with touch simulation
-            try {
-                if (this.wavesurfer && audioContext && audioContext.state === 'running') {
-                    // Create a touch event to simulate user interaction
-                    const touchEvent = new TouchEvent('touchstart', {
-                        bubbles: true,
-                        cancelable: true,
-                        touches: [{
-                            clientX: 100,
-                            clientY: 100,
-                            target: document.querySelector('.control-btn.play-pause')
-                        }]
-                    });
-                    
-                    // Dispatch the touch event first
-                    document.dispatchEvent(touchEvent);
-                    
-                    // Small delay, then force play
-                    await new Promise(resolve => setTimeout(resolve, 50));
-                    
-                    // Force WaveSurfer play with maximum volume briefly
-                    const originalVolume = this.wavesurfer.getVolume();
-                    this.wavesurfer.setVolume(0.5); // Ensure audible
-                    
-                    await this.wavesurfer.play();
-                    
-                    // Restore original volume after 200ms
-                    setTimeout(() => {
-                        if (this.wavesurfer) {
-                            this.wavesurfer.setVolume(originalVolume);
-                        }
-                    }, 200);
-                    
-                    this.isPlaying = true;
-                    this.updatePlayButton();
-                    console.log('✅ Mobile track advance play FORCED successfully');
-                    return true;
-                }
-            } catch (playError) {
-                console.error('❌ Force play failed:', playError);
-            }
-            
-            // Strategy 3: Fallback with user prompt if all fails
-            if (!this.isPlaying) {
-                console.log('🚨 All automatic attempts failed, showing user prompt');
-                this.showMobileTrackAdvancePrompt();
-                return false;
-            }
-            
-            return true;
-        };
-        
-        // Execute the critical fix
-        forceRealMobileAudio().catch(error => {
-            console.error('❌ Mobile audio force failed:', error);
-            this.showMobileTrackAdvancePrompt();
-        });
-    }
-    
-    // NEW: Show prompt specifically for track advance failures
-    showMobileTrackAdvancePrompt() {
-        console.log('📱 Showing mobile track advance prompt');
-        
-        const promptDiv = document.createElement('div');
-        promptDiv.style.cssText = `
-            position: fixed; 
-            top: 50%; 
-            left: 50%; 
-            transform: translate(-50%, -50%); 
-            z-index: 99999; 
-            background: rgba(0,0,0,0.9); 
-            color: white; 
-            padding: 20px; 
-            border-radius: 10px; 
-            text-align: center;
-            font-size: 16px;
-            max-width: 300px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        `;
-        
-        promptDiv.innerHTML = `
-            <div>🎵 Tap to continue playing</div>
-            <button id="mobile-continue-btn" style="
-                background: #ffd700; 
-                border: none; 
-                padding: 15px 30px; 
-                border-radius: 5px; 
-                font-weight: bold; 
-                margin-top: 15px;
-                font-size: 16px;
-                cursor: pointer;
-            ">▶️ PLAY</button>
-        `;
-        
-        document.body.appendChild(promptDiv);
-        
-        const continueBtn = document.getElementById('mobile-continue-btn');
-        continueBtn.addEventListener('click', async () => {
-            console.log('👆 User clicked mobile continue prompt');
-            
-            try {
-                await this.play();
-                document.body.removeChild(promptDiv);
-                console.log('✅ Manual play successful after prompt');
-            } catch (error) {
-                console.error('❌ Manual play failed:', error);
-                continueBtn.textContent = 'Failed - Try Again';
-            }
-        });
-        
-        // Auto-remove after 8 seconds
-        setTimeout(() => {
-            if (promptDiv.parentNode) {
-                document.body.removeChild(promptDiv);
-            }
-        }, 8000);
-    }
-    
-    // BENJAMIN FIX: Show mobile play prompt only for first track
-    showMobilePlayPrompt() {
-        console.log('📱 Showing mobile play prompt for first track');
-        
-        const tempPlayButton = document.createElement('button');
-        tempPlayButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #ffd700; border: none; padding: 10px 20px; border-radius: 5px; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.3);';
-        tempPlayButton.textContent = '▶️ Start Playing';
-        
-        tempPlayButton.addEventListener('click', async () => {
-            console.log('👆 User clicked mobile play prompt');
-            await this.play();
-            if (tempPlayButton.parentNode) {
-                document.body.removeChild(tempPlayButton);
-            }
-        });
-        
-        document.body.appendChild(tempPlayButton);
-        
-        // Auto-remove after 10 seconds
-        setTimeout(() => {
-            if (tempPlayButton.parentNode) {
-                document.body.removeChild(tempPlayButton);
-            }
-        }, 10000);
     }
     
     async play() {
@@ -1283,19 +1074,8 @@ class YoyakuPlayerUltraFin {
     }
     
     previousTrack() {
-        console.log(`🔄 PreviousTrack called: current=${this.currentTrackIndex}, total=${this.tracks.length}`);
-        
         if (this.currentTrackIndex > 0) {
-            console.log('⬅️ Loading previous track:', this.currentTrackIndex - 1);
-            const wasPlaying = this.isPlaying;
             this.loadTrack(this.currentTrackIndex - 1);
-            
-            // Auto-play if was playing
-            if (wasPlaying) {
-                this.autoPlayAfterLoad = true;
-            }
-        } else {
-            console.log('⬅️ Already at first track');
         }
     }
     

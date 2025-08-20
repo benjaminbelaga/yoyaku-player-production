@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTRATHINK - Test iPhone Safari SVG Icons</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #2d2d2d, #1a1a1a);
+            border-radius: 10px;
+        }
+        
+        .device-info {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .test-section {
+            background: #333;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #ffd700;
+        }
+        
+        .icon-test {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .icon-method {
+            flex: 1;
+            min-width: 200px;
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #444;
+        }
+        
+        .icon-demo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 60px;
+            background: #1a1a1a;
+            border-radius: 4px;
+            margin: 10px 0;
+            position: relative;
+        }
+        
+        /* TEST 1: UTF-8 SVG (Solution ULTRATHINK) */
+        .test-utf8-prev::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+        }
+        
+        .test-utf8-next::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+        }
+        
+        .test-utf8-play::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M8 5v14l11-7z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+        }
+        
+        .test-utf8-pause::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+        }
+        
+        /* TEST 2: Base64 SVG (Problématique) */
+        .test-base64-prev::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik02IDZoMnYxMkg2em0zLjUgNmw4LjUgNlY2eiIvPjwvc3ZnPg==');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+        }
+        
+        .test-base64-play::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZDcwMCI+PHBhdGggZD0iTTggNXYxNGwxMS03eiIvPjwvc3ZnPg==');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            display: block;
+        }
+        
+        /* TEST 3: Unicode Fallback */
+        .test-unicode-prev::after {
+            content: "⏮";
+            font-size: 20px;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .test-unicode-next::after {
+            content: "⏭";
+            font-size: 20px;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .test-unicode-play::after {
+            content: "▶";
+            font-size: 20px;
+            color: #ffd700;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .test-unicode-pause::after {
+            content: "⏸";
+            font-size: 20px;
+            color: #ffd700;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        /* TEST 4: Inline SVG */
+        .test-inline svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+        
+        .test-inline svg.play {
+            fill: #ffd700;
+        }
+        
+        .status {
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .status.success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .status.warning {
+            background: #ffc107;
+            color: black;
+        }
+        
+        .status.error {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .results {
+            background: #2d2d2d;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 8px;
+        }
+        
+        .device-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .spec-item {
+            background: #444;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        .debug-section {
+            background: #1a1a1a;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 6px;
+            border: 1px dashed #666;
+        }
+        
+        .debug-section code {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <div class="header">
+            <h1>🔬 ULTRATHINK iPhone Safari SVG Test</h1>
+            <p>Test de compatibilité des icônes SVG sur tous les formats iPhone</p>
+        </div>
+        
+        <div class="device-info">
+            <h3>📱 Informations Device</h3>
+            <div class="device-specs">
+                <div class="spec-item">
+                    <strong>User Agent:</strong><br>
+                    <span id="userAgent"></span>
+                </div>
+                <div class="spec-item">
+                    <strong>Viewport:</strong><br>
+                    <span id="viewport"></span>
+                </div>
+                <div class="spec-item">
+                    <strong>Device Pixel Ratio:</strong><br>
+                    <span id="pixelRatio"></span>
+                </div>
+                <div class="spec-item">
+                    <strong>Safari Version:</strong><br>
+                    <span id="safariVersion"></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>✅ TEST 1: UTF-8 SVG (Solution ULTRATHINK)</h3>
+            <p>SVG encodé en UTF-8 sans Base64 - <strong>Recommandé 2024</strong></p>
+            <div class="icon-test">
+                <div class="icon-method">
+                    <h4>Previous</h4>
+                    <div class="icon-demo test-utf8-prev"></div>
+                    <div class="status" id="utf8-prev-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Next</h4>
+                    <div class="icon-demo test-utf8-next"></div>
+                    <div class="status" id="utf8-next-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Play</h4>
+                    <div class="icon-demo test-utf8-play"></div>
+                    <div class="status" id="utf8-play-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Pause</h4>
+                    <div class="icon-demo test-utf8-pause"></div>
+                    <div class="status" id="utf8-pause-status">Testing...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>⚠️ TEST 2: Base64 SVG (Problématique Safari)</h3>
+            <p>SVG encodé en Base64 - <strong>Problèmes connus iOS Safari</strong></p>
+            <div class="icon-test">
+                <div class="icon-method">
+                    <h4>Previous</h4>
+                    <div class="icon-demo test-base64-prev"></div>
+                    <div class="status" id="base64-prev-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Play</h4>
+                    <div class="icon-demo test-base64-play"></div>
+                    <div class="status" id="base64-play-status">Testing...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🔤 TEST 3: Unicode Symbols (Fallback Robuste)</h3>
+            <p>Symboles Unicode universels - <strong>Compatibilité maximale</strong></p>
+            <div class="icon-test">
+                <div class="icon-method">
+                    <h4>Previous ⏮</h4>
+                    <div class="icon-demo test-unicode-prev"></div>
+                    <div class="status" id="unicode-prev-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Next ⏭</h4>
+                    <div class="icon-demo test-unicode-next"></div>
+                    <div class="status" id="unicode-next-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Play ▶</h4>
+                    <div class="icon-demo test-unicode-play"></div>
+                    <div class="status" id="unicode-play-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Pause ⏸</h4>
+                    <div class="icon-demo test-unicode-pause"></div>
+                    <div class="status" id="unicode-pause-status">Testing...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>🎯 TEST 4: Inline SVG (Solution Ultime)</h3>
+            <p>SVG injecté directement dans le DOM - <strong>Meilleure performance</strong></p>
+            <div class="icon-test">
+                <div class="icon-method">
+                    <h4>Previous</h4>
+                    <div class="icon-demo test-inline">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                        </svg>
+                    </div>
+                    <div class="status" id="inline-prev-status">Testing...</div>
+                </div>
+                <div class="icon-method">
+                    <h4>Play</h4>
+                    <div class="icon-demo test-inline">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="play">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </div>
+                    <div class="status" id="inline-play-status">Testing...</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="debug-section">
+            <h3>🛠️ Debug Console</h3>
+            <p>Commandes JavaScript pour debug:</p>
+            <p><code>console.log(window.getComputedStyle(document.querySelector('.test-utf8-prev'), '::after').backgroundImage)</code></p>
+            <p><code>document.querySelector('.test-utf8-prev').click()</code></p>
+            <button onclick="runDebugTests()" style="background: #ffd700; border: none; padding: 10px 20px; border-radius: 4px; color: black; font-weight: bold; cursor: pointer;">
+                🔍 Run Debug Tests
+            </button>
+        </div>
+        
+        <div class="results">
+            <h3>📊 Résultats du Test</h3>
+            <div id="test-results"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Informations device
+        document.getElementById('userAgent').textContent = navigator.userAgent;
+        document.getElementById('viewport').textContent = `${window.innerWidth}x${window.innerHeight}`;
+        document.getElementById('pixelRatio').textContent = window.devicePixelRatio || 1;
+        
+        // Détecter Safari version
+        const safariMatch = navigator.userAgent.match(/Version\/([\d.]+).*Safari/);
+        document.getElementById('safariVersion').textContent = safariMatch ? safariMatch[1] : 'Non-Safari';
+        
+        // Tests automatisés
+        function testIconVisibility(selector, statusId) {
+            setTimeout(() => {
+                const element = document.querySelector(selector);
+                const statusElement = document.getElementById(statusId);
+                
+                if (!element) {
+                    statusElement.textContent = 'Element not found';
+                    statusElement.className = 'status error';
+                    return;
+                }
+                
+                const rect = element.getBoundingClientRect();
+                const computedStyle = window.getComputedStyle(element, '::after');
+                
+                let isVisible = false;
+                let method = '';
+                
+                // Test background-image
+                if (computedStyle.backgroundImage && computedStyle.backgroundImage !== 'none') {
+                    isVisible = true;
+                    method = 'CSS Background';
+                }
+                
+                // Test content
+                if (computedStyle.content && computedStyle.content !== 'none' && computedStyle.content !== '""') {
+                    isVisible = true;
+                    method = 'CSS Content';
+                }
+                
+                // Test SVG inline
+                if (element.querySelector('svg')) {
+                    isVisible = true;
+                    method = 'Inline SVG';
+                }
+                
+                if (isVisible) {
+                    statusElement.textContent = `✅ Visible (${method})`;
+                    statusElement.className = 'status success';
+                } else {
+                    statusElement.textContent = '❌ Not visible';
+                    statusElement.className = 'status error';
+                }
+            }, 100);
+        }
+        
+        // Lancer tous les tests
+        const tests = [
+            ['.test-utf8-prev', 'utf8-prev-status'],
+            ['.test-utf8-next', 'utf8-next-status'],
+            ['.test-utf8-play', 'utf8-play-status'],
+            ['.test-utf8-pause', 'utf8-pause-status'],
+            ['.test-base64-prev', 'base64-prev-status'],
+            ['.test-base64-play', 'base64-play-status'],
+            ['.test-unicode-prev', 'unicode-prev-status'],
+            ['.test-unicode-next', 'unicode-next-status'],
+            ['.test-unicode-play', 'unicode-play-status'],
+            ['.test-unicode-pause', 'unicode-pause-status'],
+            ['.test-inline', 'inline-prev-status'],
+            ['.test-inline', 'inline-play-status']
+        ];
+        
+        tests.forEach(([selector, statusId]) => {
+            testIconVisibility(selector, statusId);
+        });
+        
+        // Debug functions
+        function runDebugTests() {
+            const results = {
+                userAgent: navigator.userAgent,
+                isSafari: /^((?!chrome|android).)*safari/i.test(navigator.userAgent),
+                isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent),
+                viewport: `${window.innerWidth}x${window.innerHeight}`,
+                pixelRatio: window.devicePixelRatio,
+                supportsSVG: document.implementation.hasFeature("http://www.w3.org/TR/SVG11/feature#BasicStructure", "1.1"),
+                supportsDataURI: true,
+                cssTests: {}
+            };
+            
+            // Test CSS Support
+            const testElement = document.querySelector('.test-utf8-prev');
+            if (testElement) {
+                const computedStyle = window.getComputedStyle(testElement, '::after');
+                results.cssTests = {
+                    backgroundImage: computedStyle.backgroundImage,
+                    content: computedStyle.content,
+                    display: computedStyle.display
+                };
+            }
+            
+            console.log('🔬 ULTRATHINK Debug Results:', results);
+            
+            document.getElementById('test-results').innerHTML = `
+                <pre style="background: #1a1a1a; padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 12px; color: #ffd700;">
+${JSON.stringify(results, null, 2)}
+                </pre>
+            `;
+        }
+        
+        // Auto-run debug on load
+        window.addEventListener('load', () => {
+            setTimeout(runDebugTests, 2000);
+        });
+        
+        // Test de performance
+        function performanceTest() {
+            const start = performance.now();
+            
+            // Créer 100 icônes pour tester les performances
+            const container = document.createElement('div');
+            container.style.display = 'none';
+            
+            for (let i = 0; i < 100; i++) {
+                const icon = document.createElement('div');
+                icon.className = 'test-utf8-play';
+                container.appendChild(icon);
+            }
+            
+            document.body.appendChild(container);
+            
+            setTimeout(() => {
+                const end = performance.now();
+                console.log(`⚡ Performance test: ${end - start}ms pour 100 icônes`);
+                document.body.removeChild(container);
+            }, 100);
+        }
+        
+        setTimeout(performanceTest, 3000);
+    </script>
+</body>
+</html>

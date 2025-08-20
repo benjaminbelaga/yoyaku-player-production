@@ -1,0 +1,226 @@
+/* ==============================================
+   SOLUTION ULTRATHINK - iPhone Safari SVG Icons
+   3 NIVEAUX FALLBACK - COMPATIBILITÉ UNIVERSELLE
+   ============================================== */
+
+/* NIVEAU 1: UTF-8 SVG (Sans Base64) - RECOMMENDED 2024 */
+@media (max-width: 768px) {
+    
+    /* Boutons circulaires - Base styling */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 32px !important;
+        height: 32px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        font-size: 0 !important;
+        position: relative !important;
+        margin: 0 1px !important;
+    }
+    
+    /* NIVEAU 1: UTF-8 SVG Direct (Meilleure compatibilité Safari 2024) */
+    .yoyaku-player-ultra-fin .control-btn.prev::after {
+        content: '';
+        width: 16px !important;
+        height: 16px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        display: block !important;
+    }
+    
+    .yoyaku-player-ultra-fin .control-btn.next::after {
+        content: '';
+        width: 16px !important;
+        height: 16px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        display: block !important;
+    }
+    
+    .yoyaku-player-ultra-fin .btn-play::after {
+        content: '';
+        width: 18px !important;
+        height: 18px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M8 5v14l11-7z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        display: block !important;
+        margin-left: 2px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .btn-pause::after {
+        content: '';
+        width: 18px !important;
+        height: 18px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        display: block !important;
+    }
+}
+
+/* NIVEAU 2: CSS MASK (Fallback moderne) */
+@supports (mask: url('data:image/svg+xml;utf8,')) {
+    @media (max-width: 768px) {
+        .yoyaku-player-ultra-fin .control-btn.prev::after {
+            background-image: none !important;
+            background-color: white !important;
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>') no-repeat center !important;
+            mask-size: contain !important;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>') no-repeat center !important;
+            -webkit-mask-size: contain !important;
+        }
+        
+        .yoyaku-player-ultra-fin .control-btn.next::after {
+            background-image: none !important;
+            background-color: white !important;
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>') no-repeat center !important;
+            mask-size: contain !important;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>') no-repeat center !important;
+            -webkit-mask-size: contain !important;
+        }
+        
+        .yoyaku-player-ultra-fin .btn-play::after {
+            background-image: none !important;
+            background-color: #ffd700 !important;
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>') no-repeat center !important;
+            mask-size: contain !important;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>') no-repeat center !important;
+            -webkit-mask-size: contain !important;
+        }
+        
+        .yoyaku-player-ultra-fin .btn-pause::after {
+            background-image: none !important;
+            background-color: #ffd700 !important;
+            mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>') no-repeat center !important;
+            mask-size: contain !important;
+            -webkit-mask: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>') no-repeat center !important;
+            -webkit-mask-size: contain !important;
+        }
+    }
+}
+
+/* NIVEAU 3: Unicode Universel (Fallback ultime - iPhones anciens) */
+@supports not (background-image: url('data:image/svg+xml;utf8,')) {
+    @media (max-width: 768px) {
+        .yoyaku-player-ultra-fin .control-btn.prev::after {
+            content: "⏮" !important; /* Unicode PREVIOUS TRACK */
+            background-image: none !important;
+            font-size: 14px !important;
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }
+        
+        .yoyaku-player-ultra-fin .control-btn.next::after {
+            content: "⏭" !important; /* Unicode NEXT TRACK */
+            background-image: none !important;
+            font-size: 14px !important;
+            color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }
+        
+        .yoyaku-player-ultra-fin .btn-play::after {
+            content: "▶" !important; /* Unicode PLAY */
+            background-image: none !important;
+            font-size: 16px !important;
+            color: #ffd700 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }
+        
+        .yoyaku-player-ultra-fin .btn-pause::after {
+            content: "⏸" !important; /* Unicode PAUSE */
+            background-image: none !important;
+            font-size: 16px !important;
+            color: #ffd700 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif !important;
+        }
+    }
+}
+
+/* OPTIMISATIONS SAFARI iOS SPÉCIFIQUES */
+@media (max-width: 768px) {
+    
+    /* Force hardware acceleration pour les pseudo-elements */
+    .yoyaku-player-ultra-fin .control-btn::after {
+        will-change: transform !important;
+        transform: translateZ(0) !important;
+        backface-visibility: hidden !important;
+        -webkit-backface-visibility: hidden !important;
+    }
+    
+    /* Empêcher les problèmes de rendering Safari */
+    .yoyaku-player-ultra-fin .control-btn {
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+    }
+    
+    /* Fix pour les problèmes de z-index Safari */
+    .yoyaku-player-ultra-fin .player-controls {
+        isolation: isolate !important;
+    }
+    
+    /* Masquer texte original des boutons */
+    .yoyaku-player-ultra-fin .control-btn span,
+    .yoyaku-player-ultra-fin .btn-play,
+    .yoyaku-player-ultra-fin .btn-pause {
+        color: transparent !important;
+        font-size: 0 !important;
+        overflow: hidden !important;
+    }
+}
+
+/* NIVEAU 4: INLINE SVG INJECTION (Via JavaScript) - SOLUTION ULTIME */
+/* Cette partie sera gérée par le JavaScript pour injecter directement les SVG dans le DOM */
+
+.yoyaku-player-ultra-fin .control-btn.has-inline-svg::after {
+    display: none !important;
+}
+
+.yoyaku-player-ultra-fin .control-btn.has-inline-svg svg {
+    width: 16px !important;
+    height: 16px !important;
+    fill: white !important;
+    pointer-events: none !important;
+}
+
+.yoyaku-player-ultra-fin .play-pause.has-inline-svg svg {
+    width: 18px !important;
+    height: 18px !important;
+    fill: #ffd700 !important;
+}
+
+/* PERFORMANCE OPTIMIZATIONS pour tous les niveaux */
+@media (max-width: 768px) {
+    .yoyaku-player-ultra-fin .control-btn {
+        contain: layout style paint !important;
+    }
+    
+    .yoyaku-player-ultra-fin .control-btn::after {
+        contain: layout style paint !important;
+    }
+}

@@ -247,6 +247,10 @@
     min-width: 200px;
     cursor: pointer;
     overflow: hidden;
+    /* BENJAMIN FIX: Force la visibilité */
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }
 
 .waveform-container:hover {
@@ -661,12 +665,12 @@
         height: 120px !important;
         display: grid !important;
         grid-template-rows: 60px 60px !important;
-        grid-template-columns: 60px 1fr 140px 40px !important;
+        grid-template-columns: 60px 1fr 130px 40px !important;
         grid-template-areas: 
             "vinyl metadata controls cart"
             "vinyl waveform waveform waveform" !important;
         gap: 0 !important;
-        padding: 5px !important;
+        padding: 5px 10px 5px 5px !important;
         align-items: center !important;
     }
     
@@ -700,9 +704,11 @@
     .yoyaku-player-ultra-fin .playlist-container {
         grid-area: metadata !important;
         margin: 0 !important;
-        padding: 5px !important;
+        padding: 5px 10px 5px 5px !important;
         min-width: auto !important;
         max-width: none !important;
+        width: 100% !important;
+        overflow: hidden !important;
     }
     
     .yoyaku-player-ultra-fin .playlist-info {
@@ -710,21 +716,23 @@
     }
     
     .yoyaku-player-ultra-fin .product-line-1 {
-        font-size: 11px !important;
-        font-weight: 600 !important;
+        font-size: 10px !important;
+        font-weight: 500 !important;
         color: #fff !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
-        margin-bottom: 3px !important;
+        margin-bottom: 2px !important;
+        line-height: 1.2 !important;
     }
     
     .yoyaku-player-ultra-fin .product-line-2 {
-        font-size: 9px !important;
-        color: rgba(255,255,255,0.7) !important;
+        font-size: 8px !important;
+        color: rgba(255,255,255,0.6) !important;
         white-space: nowrap !important;
         overflow: hidden !important;
         text-overflow: ellipsis !important;
+        line-height: 1.2 !important;
     }
     
     /* LIGNE 1: Controls avec icônes SVG */
@@ -733,14 +741,19 @@
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 3px !important;
+        gap: 2px !important;
         padding: 0 !important;
+        width: 130px !important;
     }
     
     /* Boutons circulaires avec vraies icônes */
     .yoyaku-player-ultra-fin .control-btn {
         width: 32px !important;
         height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
         border-radius: 50% !important;
         background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
         border: 1px solid rgba(255,255,255,0.25) !important;
@@ -752,6 +765,8 @@
         font-size: 0 !important;
         position: relative !important;
         margin: 0 1px !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
     }
     
     .yoyaku-player-ultra-fin .control-btn:hover,
@@ -760,12 +775,12 @@
         transform: scale(1.05) !important;
     }
     
-    /* Icônes SVG Data URI - PROPRES! */
+    /* Icônes SVG Base64 - COMPATIBLES IPHONE! */
     .yoyaku-player-ultra-fin .control-btn.prev::after {
         content: '';
         width: 16px !important;
         height: 16px !important;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>') !important;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik02IDZoMnYxMkg2em0zLjUgNmw4LjUgNlY2eiIvPjwvc3ZnPg==') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         display: block !important;
@@ -775,7 +790,7 @@
         content: '';
         width: 16px !important;
         height: 16px !important;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>') !important;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0id2hpdGUiPjxwYXRoIGQ9Ik02IDE4bDguNS02TDYgNnYxMnpNMTYgNnYxMmgyVjZoLTJ6Ii8+PC9zdmc+') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         display: block !important;
@@ -785,6 +800,10 @@
     .yoyaku-player-ultra-fin .play-pause {
         width: 38px !important;
         height: 38px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
+        max-width: 38px !important;
+        max-height: 38px !important;
         background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1)) !important;
         border: 1px solid rgba(255,215,0,0.4) !important;
     }
@@ -793,7 +812,7 @@
         content: '';
         width: 18px !important;
         height: 18px !important;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M8 5v14l11-7z"/></svg>') !important;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZDcwMCI+PHBhdGggZD0iTTggNXYxNGwxMS03eiIvPjwvc3ZnPg==') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         display: block !important;
@@ -804,7 +823,7 @@
         content: '';
         width: 18px !important;
         height: 18px !important;
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>') !important;
+        background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iI2ZmZDcwMCI+PHBhdGggZD0iTTYgMTloNFY1SDZ2MTR6bTgtMTR2MTRoNFY1aC00eiIvPjwvc3ZnPg==') !important;
         background-size: contain !important;
         background-repeat: no-repeat !important;
         display: block !important;
@@ -824,30 +843,50 @@
         grid-area: cart !important;
         width: 32px !important;
         height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
         border-radius: 50% !important;
         background: rgba(125,185,216,0.8) !important; /* Blue original */
         border: 1px solid rgba(125,185,216,0.4) !important;
         font-size: 14px !important;
         margin: 0 !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
     }
     
     /* LIGNE 2: Waveform pleine largeur */
     .yoyaku-player-ultra-fin .waveform-container {
         grid-area: waveform !important;
         grid-column: 2 / -1 !important;
-        width: 100% !important;
+        width: calc(100% - 10px) !important;
         height: 45px !important;
-        margin: 5px !important;
+        margin: 5px 5px 5px 5px !important;
+        padding-right: 5px !important;
         background: rgba(45,45,45,0.8) !important; /* Comme original */
         border-radius: 22px !important;
         overflow: hidden !important;
         min-width: auto !important;
         border: 1px solid #666 !important;
+        box-sizing: border-box !important;
+        /* BENJAMIN FIX: Force absolue la visibilité sur mobile */
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        z-index: 1 !important;
     }
     
     .yoyaku-player-ultra-fin #waveform {
         height: 100% !important;
         width: 100% !important;
+        /* BENJAMIN DEBUG: Forcer la visibilité du waveform */
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        background: rgba(255,0,0,0.1) !important; /* Debug: fond rouge léger pour voir le conteneur */
+        min-height: 40px !important;
     }
     
     /* Masquer track-display sur mobile */
@@ -882,35 +921,47 @@
     }
 }
 
-/* Fallback icônes si SVG ne charge pas */
-@supports not (background-image: url('data:image/svg+xml;utf8,')) {
+/* Fallback sécurisé pour très vieux navigateurs (conservé par sécurité) */
+@supports not (background-image: url('data:image/svg+xml;base64,')) {
     @media (max-width: 768px) {
         .yoyaku-player-ultra-fin .control-btn.prev::after {
-            content: "⏮" !important;
+            content: "◀◀" !important;
             background-image: none !important;
-            font-size: 12px !important;
+            font-size: 10px !important;
             color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         
         .yoyaku-player-ultra-fin .control-btn.next::after {
-            content: "⏭" !important;
+            content: "▶▶" !important;
             background-image: none !important;
-            font-size: 12px !important;
+            font-size: 10px !important;
             color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         
         .yoyaku-player-ultra-fin .btn-play::after {
             content: "▶" !important;
             background-image: none !important;
-            font-size: 14px !important;
+            font-size: 12px !important;
             color: #ffd700 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
         
         .yoyaku-player-ultra-fin .btn-pause::after {
-            content: "⏸" !important;
+            content: "❚❚" !important;
             background-image: none !important;
-            font-size: 14px !important;
+            font-size: 10px !important;
             color: #ffd700 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
         }
     }
 }
@@ -919,6 +970,19 @@
 @media (max-width: 768px) {
     body {
         padding-bottom: 120px !important;
+    }
+    
+    /* MASQUER PITCH CONTROL SUR MOBILE */
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup,
+    .yoyaku-player-ultra-fin .pitch-slider-horizontal,
+    .yoyaku-player-ultra-fin .pitch-value {
+        display: none !important;
+    }
+    
+    /* Masquer aussi dans audio-controls si présent */
+    .yoyaku-player-ultra-fin .audio-controls .pitch-icon {
+        display: none !important;
     }
 }
 
