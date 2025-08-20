@@ -552,7 +552,7 @@
 /* ==============================================
    CACHER PITCH BUTTON SUR TOUS LES MOBILES
    ============================================== */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     /* MASQUER DÉFINITIVEMENT LE PITCH */
     .yoyaku-player-ultra-fin .pitch-icon,
     .yoyaku-player-ultra-fin .pitch-popup,
@@ -897,10 +897,10 @@
 }
 
 /* ==============================================
-   GRANDS TÉLÉPHONES: 480-767px
+   GRANDS TÉLÉPHONES: 480-1049px
    iPhone Plus/Pro Max, Tablets portrait
    ============================================== */
-@media (min-width: 480px) and (max-width: 767px) {
+@media (min-width: 480px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin {
         height: 120px !important;
     }
@@ -968,7 +968,7 @@
 /* ==============================================
    STYLES GLOBAUX MOBILE - DESIGN MODERNE
    ============================================== */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     /* Player principal avec gradient moderne */
     .yoyaku-player-ultra-fin {
         transform: translateY(0) !important;
@@ -1071,18 +1071,18 @@
     body { padding-bottom: 135px !important; }
 }
 
-@media (min-width: 390px) and (max-width: 767px) {
+@media (min-width: 390px) and (max-width: 1049px) {
     body { padding-bottom: 120px !important; }
 }
 
-@media (min-width: 768px) {
+@media (min-width: 1050px) {
     body { padding-bottom: 48px !important; }
 }
 
 /* ==============================================
    ICÔNES SVG FALLBACK AMÉLIORÉES
    ============================================== */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     /* Prev button icon */
     .yoyaku-player-ultra-fin .control-btn.prev::after {
         content: '';
@@ -1185,8 +1185,17 @@
     height: 40px !important;
 }
 
-.yoyaku-player-ultra-fin .control-btn.play-pause.playing {
+/* État lecture - Affiche PAUSE quand classe .playing sur player */
+.yoyaku-player-ultra-fin.playing .control-btn.play-pause {
     background-image: url("../icons/pause.svg") !important;
+}
+
+/* État défaut - Affiche PLAY (doit avoir une règle par défaut) */
+.yoyaku-player-ultra-fin .control-btn.play-pause {
+    background-image: url("../icons/play.svg") !important;
+    background-size: 28px 28px !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
 }
 
 /* CART BUTTON - SVG BLANCHE */
@@ -1275,7 +1284,7 @@
 }
 
 /* RESPONSIVE WAVEFORM LARGE DESKTOP */
-@media (min-width: 768px) {
+@media (min-width: 1050px) {
     .yoyaku-player-ultra-fin {
         height: 60px !important;
         padding: 0 20px !important;
@@ -1331,7 +1340,7 @@
 /* ==============================================
    FIX DROPDOWN PLAYLIST MEDIUM/SMALL - BENJAMIN
    ============================================== */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .yoyaku-player-ultra-fin .playlist-dropdown {
         position: fixed !important;
         bottom: 70px !important;
@@ -1348,7 +1357,7 @@
 /* ==============================================
    CART BUTTON UNIFIÉ - FIX CONFLICTS BENJAMIN
    ============================================== */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .yoyaku-player-ultra-fin .cart-btn {
         display: flex !important;
         width: 34px !important;
@@ -1415,7 +1424,7 @@
    ENHANCED DROPDOWN VISIBILITY - ALL MOBILE RANGES
    Benjamin fix for invisible dropdown issue
    ============================================== */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .yoyaku-player-ultra-fin .playlist-dropdown {
         /* display: block !important; - DISABLED FOR TOGGLE */
         visibility: visible !important;
@@ -1439,8 +1448,8 @@
     }
 }
 
-/* Specific fixes for medium range 342-767px */
-@media (min-width: 390px) and (max-width: 767px) {
+/* Specific fixes for medium range 342-1049px */
+@media (min-width: 390px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin .playlist-dropdown {
 opacity: 0 !important;        transform: translateY(10px) !important;        pointer-events: none !important;        /* display: block !important; - DISABLED FOR TOGGLE */
         bottom: 60px !important;
@@ -1475,7 +1484,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
    ============================================== */
 
 /* Hide any potential external mobile cart overlays that might conflict */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .sticky-cart,
     .mobile-cart-overlay,
     .floating-cart,
@@ -1536,7 +1545,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     }
 }
 
-@media (min-width: 480px) and (max-width: 767px) {
+@media (min-width: 480px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin .cart-btn {
         width: 36px !important;
         height: 36px !important;
@@ -1553,7 +1562,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
    ============================================== */
 
 /* Enhanced metadata visibility on all mobile ranges */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .yoyaku-player-ultra-fin .metadata {
         grid-area: metadata !important;
         display: flex !important;
@@ -1618,8 +1627,8 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     }
 }
 
-/* Large mobile range 480-767px - Spacious 2 lines */
-@media (min-width: 480px) and (max-width: 767px) {
+/* Large mobile range 480-1049px - Spacious 2 lines */
+@media (min-width: 480px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin .player-inner {
         display: grid !important;
         grid-template-rows: 55px 65px !important;
@@ -1677,7 +1686,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
    ============================================== */
 
 /* Universal waveform positioning - ALWAYS bottom */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .yoyaku-player-ultra-fin #waveform {
         grid-area: waveform !important;
         position: relative !important;
@@ -1733,7 +1742,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     }
 }
 
-@media (min-width: 480px) and (max-width: 767px) {
+@media (min-width: 480px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin #waveform {
         margin-top: 2px !important;
         padding: 0 4px !important;
@@ -1745,7 +1754,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 }
 
 /* Desktop waveform - maintain original behavior */
-@media (min-width: 768px) {
+@media (min-width: 1050px) {
     .yoyaku-player-ultra-fin #waveform {
         position: relative !important;
         width: auto !important;
@@ -1760,7 +1769,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 }
 
 /* Fix any waveform container issues */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .yoyaku-player-ultra-fin .waveform-container,
     .yoyaku-player-ultra-fin .waveform-wrapper {
         grid-area: waveform !important;
@@ -1780,7 +1789,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     }
 
 /* FIX BOUTON DOUBLÉ - BENJAMIN ULTRATHINK */
-@media (min-width: 768px) {
+@media (min-width: 1050px) {
     /* SVG ICONS FILES - DESKTOP UNIQUEMENT */
     .yoyaku-player-ultra-fin .control-btn.prev {
         background-image: url("../icons/rewind.svg") !important;
@@ -1805,7 +1814,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
     }
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     /* DISABLE SVG FILES EN MOBILE POUR ÉVITER CONFLIT */
     .yoyaku-player-ultra-fin .control-btn.prev,
     .yoyaku-player-ultra-fin .control-btn.next {
@@ -1815,7 +1824,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 
 
 /* FIX BOUTONS SUPERPOSÉS MEDIUM RANGE - BENJAMIN ULTRATHINK */
-@media (min-width: 390px) and (max-width: 767px) {
+@media (min-width: 390px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin .controls {
         gap: 15px !important; /* Augmenté de 4px à 15px */
         padding: 0 10px !important;
@@ -1843,7 +1852,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 
 
 /* FIX ICÔNES DOUBLÉES - HIDE ::AFTER PSEUDO-ELEMENTS */
-@media (max-width: 767px) {
+@media (max-width: 1049px) {
     .yoyaku-player-ultra-fin .control-btn.prev::after,
     .yoyaku-player-ultra-fin .control-btn.next::after {
         display: none !important; /* Hide les pseudo-elements */
@@ -1865,7 +1874,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 
 
 /* FIX DROPDOWN MEDIUM - RÈGLE .open MANQUANTE */
-@media (min-width: 390px) and (max-width: 767px) {
+@media (min-width: 390px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin .playlist-container.open .playlist-dropdown {
         opacity: 1 !important;
         transform: translateY(0) !important;
@@ -1876,7 +1885,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 
 
 /* FIX DROPDOWN MEDIUM - POSITIONNEMENT CORRECT 2 LIGNES */
-@media (min-width: 480px) and (max-width: 767px) {
+@media (min-width: 480px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin .playlist-dropdown {
         bottom: 120px !important; /* Hauteur totale du player 2 lignes */
         position: fixed !important;
@@ -2017,7 +2026,7 @@ opacity: 0 !important;        transform: translateY(10px) !important;        poi
 }
 
 /* FIX HAUTEUR WAVEFORM MEDIUM FINAL */
-@media (min-width: 480px) and (max-width: 767px) {
+@media (min-width: 480px) and (max-width: 1049px) {
     .yoyaku-player-ultra-fin .waveform-container {
         height: 55px !important;
         padding: 5px 15px !important;

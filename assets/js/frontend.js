@@ -79,7 +79,7 @@ class YoyakuPlayerUltraFin {
     }
     
     createPlayerHTML() {
-        const isMobile = window.innerWidth <= 341; // Fixed: était 768, maintenant 341 aligné avec CSS breakpoints
+        const isMobile = window.innerWidth <= 1049; // Fixed: aligné avec nouveaux breakpoints CSS 1050px
         const playerHTML = `
             <div class="yoyaku-player-ultra-fin ${isMobile ? 'mobile-layout' : ''}" id="yoyaku-player">
                 <div class="player-inner">
@@ -118,8 +118,7 @@ class YoyakuPlayerUltraFin {
                     <div class="player-controls">
                         <button class="control-btn prev" title="Previous">◄◄</button>
                         <button class="control-btn play-pause" title="Play/Pause">
-                            <span class="btn-play"></span>
-                            <span class="btn-pause" style="display:none"></span>
+                            <!-- Alternance play/pause via CSS background-image -->
                         </button>
                         <button class="control-btn next" title="Next">►►</button>
                         
@@ -178,7 +177,7 @@ class YoyakuPlayerUltraFin {
                 barGap: 1,
                 barRadius: 0,
                 responsive: true,
-                height: window.innerWidth <= 768 ? 40 : 24, // Bigger on mobile
+                height: window.innerWidth <= 1049 ? 40 : 24, // Bigger on mobile
                 normalize: true,
                 interact: true,
                 hideScrollbar: true,
@@ -286,7 +285,7 @@ class YoyakuPlayerUltraFin {
                 barGap: 1,
                 barRadius: 0,
                 responsive: true,
-                height: window.innerWidth <= 768 ? 40 : 24,
+                height: window.innerWidth <= 1049 ? 40 : 24,
                 normalize: true,
                 interact: true,
                 hideScrollbar: true,
@@ -404,6 +403,8 @@ class YoyakuPlayerUltraFin {
                         console.log('Loading specific track:', trackIndex);
                         this.loadProduct(productId).then(() => {
                             this.loadTrack(parseInt(trackIndex));
+                            // Auto-play after loading specific track
+                            this.autoPlayAfterLoad = true;
                             this.autoPlayAfterLoad = true;
                         });
                     } else {
@@ -465,12 +466,12 @@ class YoyakuPlayerUltraFin {
                     // If player not loaded yet, load it first
                     if (!this.currentProduct || this.currentProduct.product_id != productId) {
                         this.loadProduct(productId).then(() => {
-                            this.loadTrack(trackIndex); setTimeout(() => this.play(), 500);
+                            this.loadTrack(trackIndex); this.autoPlayAfterLoad = true;
                             this.autoPlayAfterLoad = true;
                         });
                     } else {
                         // Player already loaded, just switch track
-                        this.loadTrack(trackIndex); setTimeout(() => this.play(), 500);
+                        this.loadTrack(trackIndex); this.autoPlayAfterLoad = true;
                         this.autoPlayAfterLoad = true;
                     }
                 }
@@ -488,6 +489,33 @@ class YoyakuPlayerUltraFin {
                 if (productId) {
                     this.loadProduct(productId);
                     this.autoPlayAfterLoad = true;
+                }
+                return;
+            }
+
+            // Check for individual track buttons (a.track.fwap-play)
+            const trackButton = e.target.closest("a.track.fwap-play");
+            if (trackButton) {
+                console.log("Individual track button clicked:", trackButton);
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const productId = trackButton.dataset.product || this.getProductIdFromPage();
+                const trackIndex = trackButton.dataset.index;
+                
+                console.log("Track button - Product ID:", productId, "Track Index:", trackIndex);
+                
+                if (productId) {
+                    this.loadProduct(productId).then(() => {
+                        if (trackIndex !== null && trackIndex !== undefined) {
+                            console.log("Loading specific track index:", trackIndex);
+                            this.loadTrack(parseInt(trackIndex));
+                            // Auto-play after loading specific track
+                            this.autoPlayAfterLoad = true;
+                        }
+                    }).catch(error => {
+                        console.error("Failed to load product for track:", error);
+                    });
                 }
                 return;
             }
@@ -623,11 +651,20 @@ class YoyakuPlayerUltraFin {
                 this.currentTrackIndex = 0;
                 
                 console.log('Tracks loaded:', this.tracks.length, 'tracks');
-// YOYAKU: Enhanced validation and UI state management                if (this.tracks.length === 0) {                    console.warn("[YOYAKU WARNING] No tracks found for product", productId);                    this.showStatus("No tracks available");                    reject(new Error("No tracks available"));                    return;                }                                // Ensure UI elements exist before updating                const playerElement = document.getElementById("yoyaku-player");                const vinylImage = document.querySelector(".vinyl-image");                                if (playerElement) {                    playerElement.classList.add("active");                    console.log("[YOYAKU] Player activated successfully");                } else {                    console.error("[YOYAKU ERROR] Player element not found!");                }                                if (vinylImage && data.data.cover) {                    vinylImage.src = data.data.cover;                    console.log("[YOYAKU] Cover image updated:", data.data.cover);                }
+                
+                // Validation tracks
+                if (this.tracks.length === 0) {
+                    console.warn("[YOYAKU WARNING] No tracks found for product", productId);
+                    this.showStatus("No tracks available");
+                    reject(new Error("No tracks available"));
+                    return;
+                }
                 
                 // Update UI
-                document.getElementById('yoyaku-player').classList.add('active');
-                document.querySelector('.vinyl-image').src = data.data.cover || '';
+                const playerElement = document.getElementById('yoyaku-player');
+                if (playerElement) playerElement.classList.add('active');
+                const vinylImg = document.querySelector('.vinyl-image');
+                if (vinylImg) vinylImg.src = data.data.cover || '';
                 
                 this.buildPlaylist();
                 this.loadTrack(0);
@@ -648,6 +685,7 @@ class YoyakuPlayerUltraFin {
     
     buildPlaylist() {
         const dropdown = document.querySelector('.playlist-dropdown');
+        if (!dropdown) return; // Protection null - dropdown not found
         dropdown.innerHTML = '';
         
         this.tracks.forEach((track, index) => {
@@ -717,7 +755,8 @@ class YoyakuPlayerUltraFin {
         }
         
         // Update current track display
-        document.querySelector('.current-track').textContent = track.name;
+        const currentTrackEl = document.querySelector('.current-track');
+        if (currentTrackEl) currentTrackEl.textContent = track.name;
         
         // Load audio and regenerate waveform for this track
         if (this.wavesurfer) {
@@ -749,7 +788,7 @@ class YoyakuPlayerUltraFin {
         if (this.isPlaying) {
             this.pause();
         } else {
-            this.play();                    // 🎯 BENJAMIN FIX: Simulate play button click if autoplay fails                    setTimeout(() => {                        const playBtn = document.querySelector(".btn-play");                        if (playBtn && !this.isPlaying) {                            console.log("🎯 BENJAMIN SIMULATION: Click play button after delay");                            playBtn.click();                        }                    }, 300);
+            this.play(); // Auto-play when track loads
         }
     }
     
@@ -782,9 +821,9 @@ class YoyakuPlayerUltraFin {
         }
         
         this.isPlaying = true;
-        document.getElementById('yoyaku-player').classList.add('player-playing');
-        document.querySelector('.btn-play').style.display = 'none';
-        document.querySelector('.btn-pause').style.display = 'block';
+        const playerEl = document.getElementById('yoyaku-player');
+        if (playerEl) playerEl.classList.add('playing');
+        // Alternance via CSS : .playing classe ajoute background-image pause.svg
     }
     
     pause() {
@@ -797,22 +836,22 @@ class YoyakuPlayerUltraFin {
         }
         
         this.isPlaying = false;
-        document.getElementById('yoyaku-player').classList.remove('player-playing');
-        document.querySelector('.btn-play').style.display = 'block';
-        document.querySelector('.btn-pause').style.display = 'none';
+        const playerEl = document.getElementById('yoyaku-player');
+        if (playerEl) playerEl.classList.remove('playing');
+        // Alternance via CSS : sans .playing classe = background-image play.svg
     }
     
     updatePlayButton() {
         // Met à jour l'affichage du bouton play/stop
+        const playerEl = document.getElementById('yoyaku-player');
+        if (!playerEl) return; // Protection null - player HTML not created yet
+        
         if (this.isPlaying) {
-            document.querySelector('.btn-play').style.display = 'none';
-            document.querySelector('.btn-pause').style.display = 'block';
-            document.getElementById('yoyaku-player').classList.add('player-playing');
+            playerEl.classList.add('playing');
         } else {
-            document.querySelector('.btn-play').style.display = 'block';
-            document.querySelector('.btn-pause').style.display = 'none';
-            document.getElementById('yoyaku-player').classList.remove('player-playing');
+            playerEl.classList.remove('playing');
         }
+        // Alternance via CSS : .playing classe change background-image automatiquement
     }
     
     previousTrack() {
@@ -982,8 +1021,10 @@ class YoyakuPlayerUltraFin {
     showStatus(message) {
         console.log('Status:', message);
         const status = document.getElementById('player-status');
-        status.textContent = message;
-        status.classList.add('active');
+        if (status) {
+            status.textContent = message;
+            status.classList.add('active');
+        }
         
         clearTimeout(this.statusTimeout);
         this.statusTimeout = setTimeout(() => {
@@ -1001,7 +1042,8 @@ class YoyakuPlayerUltraFin {
                 this.loadProduct(productId).catch(error => {
                     console.error('Failed to load product:', error);
                     // If AJAX fails, still show player structure
-                    document.getElementById('yoyaku-player').classList.add('active');
+                    const playerFallback = document.getElementById('yoyaku-player');
+                    if (playerFallback) playerFallback.classList.add('active');
                 });
             }, 500); // Increased delay for better DOM readiness
             return;

@@ -1,218 +1,171 @@
 <?php
 /**
- * Plugin Name: YOYAKU Player V3 ULTRA-FIN TITLE-CORRECTED
- * Description: Ultra-thin audio player (48px) with WaveSurfer.js and pitch control
- * Version: 5.4.3
- * Author: YOYAKU
+ * Plugin Name: YOYAKU Player V3 - Professional Edition
+ * Plugin URI: https://yoyaku.io
+ * Description: Professional audio player with WaveSurfer.js integration, responsive design, and tracklist autoplay functionality 
+ * Version: 6.1.0
+ * Author: YOYAKU SARL
+ * Author URI: https://yoyaku.io
+ * Text Domain: yoyaku-player-v3
+ * Domain Path: /languages
+ * Requires at least: 5.8
+ * Requires PHP: 7.4
+ * License: GPL v2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * 
+ * Professional edition with:
+ * - Fixed tracklist buttons autoplay functionality
+ * - Responsive mobile design (48px desktop, 120px mobile)
+ * - Real WaveSurfer.js integration with proper audio analysis
+ * - Clean, maintainable code architecture
+ * - Production-ready error handling
+ * - YOYAKU-specific e-commerce integration
+ * 
+ * @package YoyakuPlayerV3
+ * @since 6.1.0
  */
 
+// Prevent direct access
 if (!defined('ABSPATH')) {
     exit;
 }
 
-class YoyakuPlayerV3 {
-    
-    public function __construct() {
-        add_action('wp_enqueue_scripts', [$this, 'enqueue_scripts']);
-        add_action('wp_ajax_yoyaku_player_v3_get_track', [$this, 'ajax_get_track']);
-        add_action('wp_ajax_nopriv_yoyaku_player_v3_get_track', [$this, 'ajax_get_track']);
-        add_shortcode('yoyaku_player_v3', [$this, 'render_player_shortcode']);
-        
-        // Pass current product ID to JavaScript on product pages
-        add_action('wp_footer', [$this, 'add_product_id_to_js']);
-    }
-    
-    public function enqueue_scripts() {
-        // Enqueue CSS
-        wp_enqueue_style(
-            'yoyaku-player-v3',
-            plugin_dir_url(__FILE__) . 'assets/css/frontend.css',
-            [],
-            '5.3.1.1755165731'
-        );
-        
-        // Enqueue JS with dependencies
-        wp_enqueue_script(
-            'yoyaku-player-v3',
-            plugin_dir_url(__FILE__) . 'assets/js/frontend.js',
-            ['jquery'],
-            '5.3.1.1755165731',
-            true
-        );
-        // Image click addon
-        wp_enqueue_script(
-            'yoyaku-player-image-click',
-            plugin_dir_url(__FILE__) . 'assets/js/image-click-addon.js',
-            ['yoyaku-player-v3'],
-            '5.3.1.1755165731',
-            true
-        );
-        
-        // Localize script with current product ID if on product page
-        $current_product_id = 0;
-        if (true) {
-            global $product;
-            if ($product && is_object($product) && method_exists($product, 'get_id')) {
-                $current_product_id = $product->get_id();
-            } else {
-                // Fallback: get from global $post
-                global $post;
-                if ($post && isset($post->ID)) {
-                    $current_product_id = 0; // FIXED: was $post->ID causing fake product IDs
-                }
-            }
-        }
-        
-        wp_localize_script('yoyaku-player-v3', 'yoyaku_player_v3', [
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('yoyaku_player_v3_nonce'),
-            'plugin_url' => plugin_dir_url(__FILE__),
-            'wc_ajax_url' => WC_AJAX::get_endpoint('add_to_cart'),
-            'current_product_id' => $current_product_id,
-            'is_mobile' => wp_is_mobile()
-        ]);
-    }
-    
-    public function ajax_get_track() {
-        // More lenient nonce verification for AJAX
-        $nonce = $_POST['nonce'] ?? $_REQUEST['nonce'] ?? '';
-        
-        // Allow both nonces for compatibility
-        if (!wp_verify_nonce($nonce, 'yoyaku_player_v3_nonce') && 
-            !wp_verify_nonce($nonce, 'yoyaku_player_v3')) {
-            // Log the issue but continue for now
-            error_log('YOYAKU Player V3 - Nonce verification failed, but continuing...');
-            // wp_send_json_error('Invalid nonce');
-        }
-        
-        $product_id = intval($_POST['product_id'] ?? 0);
-        
-        if (!$product_id) {
-            wp_send_json_error('Invalid product ID');
-        }
-        
-        // Get product
-        $product = wc_get_product($product_id);
-        
-        if (!$product) {
-            wp_send_json_error('Product not found');
-        }
-        
-        // Get playlist files from meta
-        $playlist_files = get_post_meta($product_id, '_yoyaku_playlist_files', true);
-        
-        if (empty($playlist_files)) {
-            wp_send_json_error('No playlist found for this product');
-        }
-        
-        // Parse tracks
-        $tracks = $this->parse_playlist_files($playlist_files);
-        
-        // Get artist name
-        $artist_terms = get_the_terms($product_id, 'musicartist');
-        $artist_name = 'Unknown Artist';
+// Define plugin constants
+define('YPV3_VERSION', '6.1.0');
+define('YPV3_PLUGIN_FILE', __FILE__);
+define('YPV3_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('YPV3_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('YPV3_PLUGIN_BASENAME', plugin_basename(__FILE__));
 
-        // Get label
-        $label_terms = get_the_terms($product_id, 'musiclabel');
-        $label_name = 'Unknown Label';
-        if ($label_terms && !is_wp_error($label_terms) && count($label_terms) > 0) {
-            $label_name = $label_terms[0]->name;
-        }
-        if ($artist_terms && !is_wp_error($artist_terms) && count($artist_terms) > 0) {
-            $artist_name = $artist_terms[0]->name;
-        }
-        
-        // Get product data
-        $product_data = [
-            'product_id' => $product_id,
-            'title' => $product->get_name(),
-            'artist' => $artist_name,
-            'cover' => wp_get_attachment_url($product->get_image_id()),
-            'tracks' => $tracks,
-            'sku' => $product->get_sku() ?: $product_id,
-            'label' => $label_name
-        ];
-        
-        // Log for debugging
-        error_log('YOYAKU Player V3 - Product: ' . $product_id . ', Tracks: ' . count($tracks));
-        
-        wp_send_json_success($product_data);
+// Minimum requirements for production deployment
+define('YPV3_MIN_PHP_VERSION', '7.4');
+define('YPV3_MIN_WP_VERSION', '5.8');
+
+/**
+ * Check minimum requirements before plugin activation
+ * 
+ * @return bool True if requirements met
+ */
+function ypv3_check_requirements() {
+    // Check PHP version
+    if (version_compare(PHP_VERSION, YPV3_MIN_PHP_VERSION, '<')) {
+        add_action('admin_notices', 'ypv3_php_version_notice');
+        return false;
     }
     
-    private function parse_playlist_files($playlist_files) {
-        $tracks = [];
-        
-        // Handle serialized array format
-        if (is_string($playlist_files)) {
-            $playlist_data = maybe_unserialize($playlist_files);
-        } else {
-            $playlist_data = $playlist_files;
-        }
-        
-        if (!is_array($playlist_data)) {
-            return $tracks;
-        }
-        
-        foreach ($playlist_data as $file) {
-            // Handle both formats
-            if ((isset($file['track_name']) && isset($file['track_file_url'])) || 
-                (isset($file['name']) && isset($file['file']))) {
-                $tracks[] = [
-                    'name' => $file['track_name'] ?? $file['name'],
-                    'url' => $file['track_file_url'] ?? $file['file'],
-                    'bpm' => $file['track_bpm'] ?? $file['bpm'] ?? null,
-                    'duration' => $file['track_duration'] ?? $file['duration'] ?? null
-                ];
-            }
-        }
-        
-        return $tracks;
+    // Check WordPress version  
+    global $wp_version;
+    if (version_compare($wp_version, YPV3_MIN_WP_VERSION, '<')) {
+        add_action('admin_notices', 'ypv3_wp_version_notice');
+        return false;
     }
     
-    public function render_player_shortcode($atts) {
-        $atts = shortcode_atts([
-            'product_id' => 0,
-            'autoplay' => 'false'
-        ], $atts);
-        
-        if (!$atts['product_id']) {
-            return '<p>Please specify a product_id</p>';
-        }
-        
-        $product = wc_get_product($atts['product_id']);
-        
-        if (!$product) {
-            return '<p>Product not found</p>';
-        }
-        
-        ob_start();
-        ?>
-        <div class="yoyaku-player-shortcode">
-            <button class="yoyaku-play-button" 
-                    data-product-id="<?php echo esc_attr($atts['product_id']); ?>"
-                    data-autoplay="<?php echo esc_attr($atts['autoplay']); ?>">
-                ▶ Play <?php echo esc_html($product->get_name()); ?>
-            </button>
-        </div>
-        <?php
-        return ob_get_clean();
-    }
-    
-    public function add_product_id_to_js() {
-        if (true) {
-            global $product;
-            if ($product) {
-                ?>
-                <script>
-                if (window.yoyaku_player_v3) {
-                    window.yoyaku_player_v3.current_product_id = <?php echo $product->get_id(); ?>;
-                }
-                </script>
-                <?php
-            }
-        }
-    }
+    return true;
 }
 
-// Initialize plugin
-new YoyakuPlayerV3();
+/**
+ * PHP version requirement notice
+ */
+function ypv3_php_version_notice() {
+    ?>
+    <div class="notice notice-error">
+        <p><?php printf(
+            esc_html__('YOYAKU Player V3 requires PHP %s or higher. You are running PHP %s.', 'yoyaku-player-v3'),
+            YPV3_MIN_PHP_VERSION,
+            PHP_VERSION
+        ); ?></p>
+    </div>
+    <?php
+}
+
+/**
+ * WordPress version requirement notice
+ */
+function ypv3_wp_version_notice() {
+    global $wp_version;
+    ?>
+    <div class="notice notice-error">
+        <p><?php printf(
+            esc_html__('YOYAKU Player V3 requires WordPress %s or higher. You are running WordPress %s.', 'yoyaku-player-v3'),
+            YPV3_MIN_WP_VERSION,
+            $wp_version
+        ); ?></p>
+    </div>
+    <?php
+}
+
+/**
+ * Initialize the YOYAKU Player V3 Professional Edition
+ */
+function ypv3_init() {
+    // Check requirements before initialization
+    if (!ypv3_check_requirements()) {
+        return;
+    }
+    
+    // Load main plugin functionality
+    require_once YPV3_PLUGIN_DIR . 'includes/class-yoyaku-player-core.php';
+    
+    // Initialize the player
+    $player = YoyakuPlayerCore::get_instance();
+    $player->init();
+}
+
+// Hook into WordPress initialization
+add_action('plugins_loaded', 'ypv3_init', 10);
+
+/**
+ * Plugin activation hook - production safety checks
+ */
+function ypv3_activate() {
+    // Verify requirements on activation
+    if (!ypv3_check_requirements()) {
+        deactivate_plugins(YPV3_PLUGIN_BASENAME);
+        wp_die(
+            esc_html__('YOYAKU Player V3 Professional Edition requires minimum PHP 7.4 and WordPress 5.8', 'yoyaku-player-v3'),
+            esc_html__('Plugin Activation Error', 'yoyaku-player-v3'),
+            array('back_link' => true)
+        );
+    }
+    
+    // Flush rewrite rules for clean URLs
+    flush_rewrite_rules();
+    
+    // Create necessary database tables if needed
+    ypv3_create_tables();
+}
+
+/**
+ * Plugin deactivation hook - cleanup
+ */
+function ypv3_deactivate() {
+    // Clean up temporary data
+    flush_rewrite_rules();
+    
+    // Remove transients
+    delete_transient('yoyaku_player_cache');
+}
+
+/**
+ * Create necessary database tables for enhanced functionality
+ */
+function ypv3_create_tables() {
+    // Future: Analytics, playlists, user preferences
+    // Currently using WordPress post meta - no custom tables needed
+    
+    // Set database version for future migrations
+    update_option('yoyaku_player_db_version', '1.0');
+}
+
+// Register activation/deactivation hooks
+register_activation_hook(__FILE__, 'ypv3_activate');
+register_deactivation_hook(__FILE__, 'ypv3_deactivate');
+
+/**
+ * Plugin loaded successfully message for debugging
+ */
+add_action('wp_footer', function() {
+    if (defined('WP_DEBUG') && WP_DEBUG) {
+        echo "<!-- YOYAKU Player V3 Professional Edition v" . YPV3_VERSION . " loaded successfully -->";
+    }
+});
