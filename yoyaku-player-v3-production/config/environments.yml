@@ -1,0 +1,142 @@
+# YOYAKU Environment Configuration
+# Following CLAUDE.md safety protocols
+
+environments:
+  staging:
+    name: "Clone Development"
+    app_id: "gwrckvqdjn"
+    domain: "woocommerce-870689-5762868.cloudwaysapps.com"
+    path: "/home/master/applications/gwrckvqdjn/public_html"
+    database: "gwrckvqdjn"
+    ssh_host: "134.122.80.6"
+    ssh_user: "master_crhmyfjcsf"
+    wp_debug: true
+    wp_debug_log: true
+    wp_debug_display: false
+    script_debug: true
+    auto_backup: true
+    backup_retention: "7 days"
+    allow_file_edit: true
+    disallow_file_mods: false
+    health_check_url: "https://woocommerce-870689-5762868.cloudwaysapps.com"
+    deployment_strategy: "direct"
+    rollback_enabled: true
+    
+  production:
+    name: "YOYAKU Production"
+    app_id: "jfnkmjmfer"
+    domain: "yoyaku.io"
+    path: "/home/master/applications/jfnkmjmfer/public_html"
+    database: "jfnkmjmfer"
+    ssh_host: "134.122.80.6"
+    ssh_user: "master_crhmyfjcsf"
+    wp_debug: false
+    wp_debug_log: true
+    wp_debug_display: false
+    script_debug: false
+    auto_backup: true
+    backup_retention: "30 days"
+    allow_file_edit: false
+    disallow_file_mods: true
+    health_check_url: "https://yoyaku.io"
+    checkout_url: "https://yoyaku.io/checkout/"
+    shop_url: "https://www.yoyaku.io/releases/"
+    deployment_strategy: "zero_downtime"
+    rollback_enabled: true
+    pre_deployment_checks:
+      - server_load_check
+      - database_size_check
+      - disk_space_check
+      - memory_usage_check
+      - current_orders_check
+    post_deployment_monitoring:
+      - response_time_check
+      - error_rate_check
+      - checkout_functionality
+      - woocommerce_status
+      
+  yyd_production:
+    name: "YYD Production"
+    app_id: "akrjekfvzk"
+    domain: "yydistribution.fr"
+    path: "/home/master/applications/akrjekfvzk/public_html"
+    database: "akrjekfvzk"
+    ssh_host: "134.122.80.6"
+    ssh_user: "master_crhmyfjcsf"
+    wp_debug: false
+    wp_debug_log: true
+    wp_debug_display: false
+    script_debug: false
+    auto_backup: true
+    backup_retention: "30 days"
+    allow_file_edit: false
+    disallow_file_mods: true
+    health_check_url: "https://yydistribution.fr"
+    deployment_strategy: "zero_downtime"
+    rollback_enabled: true
+
+# Security settings
+security:
+  ssh_key_path: "~/.ssh/cloudways_rsa"
+  known_hosts_verification: true
+  backup_encryption: true
+  audit_logging: true
+  
+# Monitoring settings
+monitoring:
+  health_check_interval: 300  # 5 minutes
+  error_threshold: 5
+  response_time_threshold: 5000  # 5 seconds
+  disk_space_threshold: 85  # 85%
+  memory_threshold: 80  # 80%
+  
+# Notification settings
+notifications:
+  discord:
+    enabled: true
+    webhook_var: "DISCORD_WEBHOOK"
+    channels:
+      deployment: "#deployments"
+      alerts: "#alerts"
+      errors: "#errors"
+  slack:
+    enabled: false
+    webhook_var: "SLACK_WEBHOOK"
+  email:
+    enabled: true
+    recipients:
+      - "ben@yoyaku.io"
+      - "nizar@yoyaku.fr"
+      
+# Backup settings
+backups:
+  database:
+    enabled: true
+    compression: true
+    retention_days: 30
+    location: "/tmp/backups"
+  files:
+    enabled: true
+    compression: true
+    retention_days: 7
+    exclude_patterns:
+      - "*.log"
+      - "*.tmp"
+      - "node_modules/*"
+      - ".git/*"
+      
+# WordPress specific settings
+wordpress:
+  compatibility_check: true
+  plugin_security_scan: true
+  theme_validation: true
+  database_optimization: false  # Never on production
+  cache_clearing: true
+  
+# WooCommerce specific settings
+woocommerce:
+  hpos_compatibility: true
+  order_status_check: true
+  checkout_validation: true
+  payment_gateway_check: true
+  inventory_validation: false  # Only on major updates

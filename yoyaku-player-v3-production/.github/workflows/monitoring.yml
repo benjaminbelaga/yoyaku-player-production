@@ -1,0 +1,396 @@
+name: YOYAKU Production Monitoring
+
+on:
+  schedule:
+    # Run every 5 minutes during business hours (8 AM - 10 PM Paris time)
+    - cron: '*/5 8-22 * * *'
+    # Run every 15 minutes during off hours
+    - cron: '*/15 23,0-7 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to monitor'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - staging
+        - yyd_production
+      force_alert:
+        description: 'Force alert regardless of status'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  MONITORING_TIMEOUT: 300
+
+jobs:
+  health-check:
+    name: Health Check - ${{ github.event.inputs.environment || 'production' }}
+    runs-on: ubuntu-latest
+    environment: monitoring
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bc curl jq
+          
+          # Install yq for YAML parsing
+          wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64
+          chmod +x /usr/local/bin/yq
+          
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.CLOUDWAYS_SSH_KEY }}
+          
+      - name: Load Environment Config
+        id: config
+        run: |
+          ENV="${{ github.event.inputs.environment || 'production' }}"
+          
+          HEALTH_URL=$(yq eval ".environments.$ENV.health_check_url" config/environments.yml)
+          APP_PATH=$(yq eval ".environments.$ENV.path" config/environments.yml)
+          SSH_HOST=$(yq eval ".environments.$ENV.ssh_host" config/environments.yml)
+          SSH_USER=$(yq eval ".environments.$ENV.ssh_user" config/environments.yml)
+          
+          echo "environment=$ENV" >> $GITHUB_OUTPUT
+          echo "health_url=$HEALTH_URL" >> $GITHUB_OUTPUT
+          echo "app_path=$APP_PATH" >> $GITHUB_OUTPUT
+          echo "ssh_host=$SSH_HOST" >> $GITHUB_OUTPUT
+          echo "ssh_user=$SSH_USER" >> $GITHUB_OUTPUT
+          
+      - name: HTTP Health Check
+        id: http_check
+        run: |
+          HEALTH_URL="${{ steps.config.outputs.health_url }}"
+          
+          echo "Checking HTTP health for: $HEALTH_URL"
+          
+          RESPONSE=$(curl -o /dev/null -s -w "%{http_code}:%{time_total}" --max-time 30 "$HEALTH_URL" || echo "000:999")
+          HTTP_CODE="${RESPONSE%:*}"
+          RESPONSE_TIME="${RESPONSE#*:}"
+          
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+          echo "response_time=$RESPONSE_TIME" >> $GITHUB_OUTPUT
+          
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::error::HTTP health check failed: $HTTP_CODE"
+            echo "status=failed" >> $GITHUB_OUTPUT
+          else
+            echo "HTTP health check passed: $HTTP_CODE (${RESPONSE_TIME}s)"
+            echo "status=passed" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: WordPress Health Check
+        id: wp_check
+        if: steps.http_check.outputs.status == 'passed'
+        run: |
+          SSH_HOST="${{ steps.config.outputs.ssh_host }}"
+          SSH_USER="${{ steps.config.outputs.ssh_user }}"
+          APP_PATH="${{ steps.config.outputs.app_path }}"
+          
+          echo "Checking WordPress health..."
+          
+          WP_HEALTH=$(ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+            cd $APP_PATH
+            
+            # WordPress core
+            WP_STATUS=\$(wp core is-installed --path=$APP_PATH && echo "OK" || echo "FAILED")
+            
+            # Plugin status
+            PLUGIN_STATUS=\$(wp plugin is-active yoyaku-player-v3-production --path=$APP_PATH && echo "ACTIVE" || echo "INACTIVE")
+            
+            # Database
+            DB_STATUS=\$(timeout 15 wp db check --path=$APP_PATH 2>/dev/null && echo "OK" || echo "FAILED")
+            
+            # WooCommerce (if available)
+            WC_STATUS="N/A"
+            if wp plugin is-active woocommerce --path=$APP_PATH 2>/dev/null; then
+              WC_STATUS=\$(timeout 20 wp option get woocommerce_custom_orders_table_enabled --path=$APP_PATH >/dev/null 2>&1 && echo "OK" || echo "FAILED")
+            fi
+            
+            # Error count
+            ERROR_COUNT=\$(tail -100 $APP_PATH/../logs/php_error.log 2>/dev/null | grep "\$(date +'%d-%b-%Y')" | wc -l || echo "0")
+            
+            echo "WP:\$WP_STATUS,PLUGIN:\$PLUGIN_STATUS,DB:\$DB_STATUS,WC:\$WC_STATUS,ERRORS:\$ERROR_COUNT"
+          EOF
+          )
+          
+          # Parse results
+          WP_STATUS=$(echo "$WP_HEALTH" | grep -o 'WP:[^,]*' | cut -d: -f2)
+          PLUGIN_STATUS=$(echo "$WP_HEALTH" | grep -o 'PLUGIN:[^,]*' | cut -d: -f2)
+          DB_STATUS=$(echo "$WP_HEALTH" | grep -o 'DB:[^,]*' | cut -d: -f2)
+          WC_STATUS=$(echo "$WP_HEALTH" | grep -o 'WC:[^,]*' | cut -d: -f2)
+          ERROR_COUNT=$(echo "$WP_HEALTH" | grep -o 'ERRORS:[^,]*' | cut -d: -f2)
+          
+          echo "wp_status=$WP_STATUS" >> $GITHUB_OUTPUT
+          echo "plugin_status=$PLUGIN_STATUS" >> $GITHUB_OUTPUT
+          echo "db_status=$DB_STATUS" >> $GITHUB_OUTPUT
+          echo "wc_status=$WC_STATUS" >> $GITHUB_OUTPUT
+          echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+          
+          echo "WordPress Health: Core=$WP_STATUS, Plugin=$PLUGIN_STATUS, DB=$DB_STATUS, WC=$WC_STATUS, Errors=$ERROR_COUNT"
+          
+          # Determine overall status
+          if [ "$WP_STATUS" = "OK" ] && [ "$PLUGIN_STATUS" = "ACTIVE" ] && [ "$DB_STATUS" = "OK" ]; then
+            echo "status=passed" >> $GITHUB_OUTPUT
+          else
+            echo "::error::WordPress health check failed"
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Server Metrics Check
+        id: server_check
+        if: steps.http_check.outputs.status == 'passed'
+        run: |
+          SSH_HOST="${{ steps.config.outputs.ssh_host }}"
+          SSH_USER="${{ steps.config.outputs.ssh_user }}"
+          APP_PATH="${{ steps.config.outputs.app_path }}"
+          
+          echo "Checking server metrics..."
+          
+          METRICS=$(ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << EOF
+            # CPU Load
+            LOAD=\$(uptime | awk -F'load average:' '{ print \$2 }' | awk '{ print \$1 }' | sed 's/,//')
+            
+            # Memory usage
+            MEMORY=\$(free | grep Mem | awk '{printf "%.1f", \$3/\$2 * 100.0}' 2>/dev/null || echo "0")
+            
+            # Disk usage
+            DISK=\$(df $APP_PATH | tail -1 | awk '{print \$5}' | sed 's/%//' 2>/dev/null || echo "0")
+            
+            echo "LOAD:\$LOAD,MEMORY:\$MEMORY,DISK:\$DISK"
+          EOF
+          )
+          
+          # Parse metrics
+          LOAD=$(echo "$METRICS" | grep -o 'LOAD:[^,]*' | cut -d: -f2 || echo "0")
+          MEMORY=$(echo "$METRICS" | grep -o 'MEMORY:[^,]*' | cut -d: -f2 || echo "0")
+          DISK=$(echo "$METRICS" | grep -o 'DISK:[^,]*' | cut -d: -f2 || echo "0")
+          
+          echo "load=$LOAD" >> $GITHUB_OUTPUT
+          echo "memory=$MEMORY" >> $GITHUB_OUTPUT
+          echo "disk=$DISK" >> $GITHUB_OUTPUT
+          
+          echo "Server Metrics: Load=$LOAD, Memory=${MEMORY}%, Disk=${DISK}%"
+          
+          # Check thresholds
+          if (( $(echo "$LOAD > 3.0" | bc -l) )); then
+            echo "::warning::High server load: $LOAD"
+          fi
+          
+          if [ -n "$MEMORY" ] && (( $(echo "$MEMORY > 80" | bc -l) )); then
+            echo "::warning::High memory usage: ${MEMORY}%"
+          fi
+          
+          if [ -n "$DISK" ] && [ "$DISK" -gt 85 ]; then
+            echo "::warning::High disk usage: ${DISK}%"
+          fi
+          
+      - name: E-commerce Specific Checks
+        id: ecommerce_check
+        if: steps.config.outputs.environment == 'production' && steps.http_check.outputs.status == 'passed'
+        run: |
+          ENV="${{ steps.config.outputs.environment }}"
+          
+          # Check checkout page
+          CHECKOUT_URL=$(yq eval ".environments.$ENV.checkout_url" config/environments.yml)
+          if [ "$CHECKOUT_URL" != "null" ]; then
+            CHECKOUT_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 "$CHECKOUT_URL" || echo "000")
+            echo "checkout_status=$CHECKOUT_STATUS" >> $GITHUB_OUTPUT
+            
+            if [ "$CHECKOUT_STATUS" != "200" ]; then
+              echo "::error::Checkout page failed: $CHECKOUT_STATUS"
+              echo "checkout_failed=true" >> $GITHUB_OUTPUT
+            else
+              echo "Checkout page check passed: $CHECKOUT_STATUS"
+            fi
+          fi
+          
+          # Check shop page
+          SHOP_URL=$(yq eval ".environments.$ENV.shop_url" config/environments.yml)
+          if [ "$SHOP_URL" != "null" ]; then
+            SHOP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" --max-time 30 "$SHOP_URL" || echo "000")
+            echo "shop_status=$SHOP_STATUS" >> $GITHUB_OUTPUT
+            
+            if [ "$SHOP_STATUS" != "200" ]; then
+              echo "::warning::Shop page failed: $SHOP_STATUS"
+            else
+              echo "Shop page check passed: $SHOP_STATUS"
+            fi
+          fi
+          
+      - name: Generate Monitoring Report
+        id: report
+        run: |
+          ENV="${{ steps.config.outputs.environment }}"
+          HTTP_CODE="${{ steps.http_check.outputs.http_code }}"
+          RESPONSE_TIME="${{ steps.http_check.outputs.response_time }}"
+          WP_STATUS="${{ steps.wp_check.outputs.wp_status }}"
+          PLUGIN_STATUS="${{ steps.wp_check.outputs.plugin_status }}"
+          DB_STATUS="${{ steps.wp_check.outputs.db_status }}"
+          WC_STATUS="${{ steps.wp_check.outputs.wc_status }}"
+          ERROR_COUNT="${{ steps.wp_check.outputs.error_count }}"
+          LOAD="${{ steps.server_check.outputs.load }}"
+          MEMORY="${{ steps.server_check.outputs.memory }}"
+          DISK="${{ steps.server_check.outputs.disk }}"
+          
+          # Determine overall health
+          OVERALL_STATUS="healthy"
+          ISSUES=""
+          
+          if [ "$HTTP_CODE" != "200" ]; then
+            OVERALL_STATUS="critical"
+            ISSUES="$ISSUES\n• HTTP check failed: $HTTP_CODE"
+          fi
+          
+          if [ "$WP_STATUS" != "OK" ]; then
+            OVERALL_STATUS="critical"
+            ISSUES="$ISSUES\n• WordPress core: $WP_STATUS"
+          fi
+          
+          if [ "$PLUGIN_STATUS" != "ACTIVE" ]; then
+            OVERALL_STATUS="critical"
+            ISSUES="$ISSUES\n• Plugin not active: $PLUGIN_STATUS"
+          fi
+          
+          if [ "$DB_STATUS" != "OK" ]; then
+            OVERALL_STATUS="critical"
+            ISSUES="$ISSUES\n• Database: $DB_STATUS"
+          fi
+          
+          if [ -n "$ERROR_COUNT" ] && [ "$ERROR_COUNT" -gt 5 ]; then
+            OVERALL_STATUS="warning"
+            ISSUES="$ISSUES\n• High error count: $ERROR_COUNT"
+          fi
+          
+          if [ -n "$LOAD" ] && (( $(echo "$LOAD > 3.0" | bc -l) )); then
+            OVERALL_STATUS="warning"
+            ISSUES="$ISSUES\n• High server load: $LOAD"
+          fi
+          
+          echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+          echo "issues<<EOF" >> $GITHUB_OUTPUT
+          echo -e "$ISSUES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+          # Create summary report
+          REPORT="## YOYAKU Monitoring Report - $ENV
+          
+          **Overall Status:** $(echo $OVERALL_STATUS | tr '[:lower:]' '[:upper:]')
+          **Timestamp:** $(date -u)
+          
+          ### HTTP Health
+          - Status Code: $HTTP_CODE
+          - Response Time: ${RESPONSE_TIME}s
+          
+          ### WordPress Health
+          - Core: $WP_STATUS
+          - Plugin: $PLUGIN_STATUS
+          - Database: $DB_STATUS
+          - WooCommerce: $WC_STATUS
+          - Error Count: $ERROR_COUNT
+          
+          ### Server Metrics
+          - Load Average: $LOAD
+          - Memory Usage: ${MEMORY}%
+          - Disk Usage: ${DISK}%"
+          
+          if [ "$ENV" = "production" ]; then
+            CHECKOUT_STATUS="${{ steps.ecommerce_check.outputs.checkout_status }}"
+            SHOP_STATUS="${{ steps.ecommerce_check.outputs.shop_status }}"
+            REPORT="$REPORT
+            
+          ### E-commerce Health
+          - Checkout Page: $CHECKOUT_STATUS
+          - Shop Page: $SHOP_STATUS"
+          fi
+          
+          if [ -n "$ISSUES" ]; then
+            REPORT="$REPORT
+            
+          ### Issues Detected
+          $ISSUES"
+          fi
+          
+          echo "report<<EOF" >> $GITHUB_OUTPUT
+          echo "$REPORT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          
+      - name: Discord Notification
+        if: steps.report.outputs.overall_status != 'healthy' || github.event.inputs.force_alert == 'true'
+        run: |
+          OVERALL_STATUS="${{ steps.report.outputs.overall_status }}"
+          ENVIRONMENT="${{ steps.config.outputs.environment }}"
+          
+          case "$OVERALL_STATUS" in
+            "critical") COLOR="15158332" ;;  # Red
+            "warning") COLOR="16776960" ;;   # Yellow
+            *) COLOR="3066993" ;;            # Green
+          esac
+          
+          TITLE="YOYAKU Monitoring Alert - $(echo $OVERALL_STATUS | tr '[:lower:]' '[:upper:]')"
+          
+          DESCRIPTION="Environment: $ENVIRONMENT
+          Status: $(echo $OVERALL_STATUS | tr '[:lower:]' '[:upper:]')
+          HTTP: ${{ steps.http_check.outputs.http_code }}
+          WordPress: ${{ steps.wp_check.outputs.wp_status }}
+          Plugin: ${{ steps.wp_check.outputs.plugin_status }}
+          Database: ${{ steps.wp_check.outputs.db_status }}
+          Time: $(date -u)"
+          
+          if [ -n "${{ steps.report.outputs.issues }}" ]; then
+            DESCRIPTION="$DESCRIPTION
+            
+          Issues:
+          ${{ steps.report.outputs.issues }}"
+          fi
+          
+          curl -H "Content-Type: application/json" \
+            -d "{\"embeds\": [{\"title\": \"$TITLE\", \"description\": \"$DESCRIPTION\", \"color\": $COLOR}]}" \
+            ${{ secrets.DISCORD_WEBHOOK }} || echo "Discord notification failed"
+            
+      - name: Update Monitoring Dashboard
+        if: always()
+        run: |
+          # Create monitoring status file
+          cat > monitoring-status.json << EOF
+          {
+            "environment": "${{ steps.config.outputs.environment }}",
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "overall_status": "${{ steps.report.outputs.overall_status }}",
+            "http": {
+              "status_code": "${{ steps.http_check.outputs.http_code }}",
+              "response_time": "${{ steps.http_check.outputs.response_time }}"
+            },
+            "wordpress": {
+              "core": "${{ steps.wp_check.outputs.wp_status }}",
+              "plugin": "${{ steps.wp_check.outputs.plugin_status }}",
+              "database": "${{ steps.wp_check.outputs.db_status }}",
+              "woocommerce": "${{ steps.wp_check.outputs.wc_status }}",
+              "error_count": "${{ steps.wp_check.outputs.error_count }}"
+            },
+            "server": {
+              "load": "${{ steps.server_check.outputs.load }}",
+              "memory": "${{ steps.server_check.outputs.memory }}",
+              "disk": "${{ steps.server_check.outputs.disk }}"
+            }
+          }
+          EOF
+          
+          echo "Monitoring status saved to monitoring-status.json"
+          
+      - name: Archive Monitoring Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: monitoring-logs-${{ steps.config.outputs.environment }}-${{ github.run_number }}
+          path: monitoring-status.json
+          retention-days: 7

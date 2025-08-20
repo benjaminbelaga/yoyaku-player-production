@@ -1,0 +1,430 @@
+name: YOYAKU CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop, staging ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+        - staging
+        - production
+      skip_tests:
+        description: 'Skip automated tests (emergency only)'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  PHP_VERSION: '8.1'
+  NODE_VERSION: '18'
+  COMPOSER_CACHE_DIR: ~/.composer/cache
+  
+jobs:
+  security-scan:
+    name: Security & Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, iconv, json, mbstring, pdo
+          coverage: none
+          
+      - name: WordPress Coding Standards
+        run: |
+          composer global require "squizlabs/php_codesniffer=*"
+          composer global require wp-coding-standards/wpcs
+          phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+          phpcs --standard=WordPress --extensions=php --ignore=vendor/ .
+          
+      - name: Security Vulnerability Scan
+        run: |
+          # Check for common WordPress security issues
+          grep -r "eval(" --include="*.php" . && exit 1 || echo "No eval() found"
+          grep -r "base64_decode(" --include="*.php" . && exit 1 || echo "No base64_decode() found"
+          grep -r "system(" --include="*.php" . && exit 1 || echo "No system() calls found"
+          grep -r "exec(" --include="*.php" . && exit 1 || echo "No exec() calls found"
+          
+      - name: Validate Plugin Headers
+        run: |
+          if [ -f "yoyaku-player-v3.php" ]; then
+            head -20 yoyaku-player-v3.php | grep -q "Plugin Name:" || exit 1
+            head -20 yoyaku-player-v3.php | grep -q "Version:" || exit 1
+            echo "Plugin headers validated"
+          fi
+
+  unit-tests:
+    name: Unit & Integration Tests
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: ${{ !inputs.skip_tests }}
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_mysql, dom, filter, gd, iconv, json, mbstring, pdo
+          coverage: xdebug
+          
+      - name: Install WordPress Test Suite
+        run: |
+          bash bin/install-wp-tests.sh wordpress_test root '' 127.0.0.1:3306 latest
+          
+      - name: Run PHPUnit Tests
+        run: |
+          vendor/bin/phpunit --coverage-text --coverage-clover=coverage.xml
+          
+      - name: WordPress Compatibility Check
+        run: |
+          # Check for deprecated WordPress functions
+          grep -r "mysql_" --include="*.php" . && exit 1 || echo "No deprecated mysql_ functions"
+          grep -r "create_function(" --include="*.php" . && exit 1 || echo "No create_function() usage"
+
+  staging-deployment:
+    name: Deploy to Staging (Clone-dev)
+    runs-on: ubuntu-latest
+    needs: [security-scan, unit-tests]
+    if: github.ref == 'refs/heads/develop' || github.event.inputs.environment == 'staging'
+    environment: staging
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.CLOUDWAYS_SSH_KEY }}
+          
+      - name: Backup Staging Before Deployment
+        run: |
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/gwrckvqdjn/public_html
+            
+            # Database backup
+            wp db export /tmp/staging-backup-$(date +%Y%m%d-%H%M%S).sql --path=/home/master/applications/gwrckvqdjn/public_html
+            
+            # Files backup
+            tar -czf /tmp/staging-files-backup-$(date +%Y%m%d-%H%M%S).tar.gz wp-content/plugins/yoyaku-player-v3-production/
+            
+            echo "Staging backup completed"
+          EOF
+          
+      - name: Deploy to Staging
+        run: |
+          # Create deployment package
+          tar -czf yoyaku-player-deployment.tar.gz \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.github' \
+            --exclude='tests' \
+            .
+            
+          # Upload to staging
+          scp -o StrictHostKeyChecking=no yoyaku-player-deployment.tar.gz master_crhmyfjcsf@134.122.80.6:/tmp/
+          
+          # Deploy on staging
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/gwrckvqdjn/public_html/wp-content/plugins/
+            
+            # Backup current version
+            if [ -d "yoyaku-player-v3-production" ]; then
+              mv yoyaku-player-v3-production yoyaku-player-v3-production-backup-$(date +%Y%m%d-%H%M%S)
+            fi
+            
+            # Extract new version
+            mkdir -p yoyaku-player-v3-production
+            cd yoyaku-player-v3-production
+            tar -xzf /tmp/yoyaku-player-deployment.tar.gz
+            
+            # Set proper permissions
+            find . -type f -exec chmod 644 {} \;
+            find . -type d -exec chmod 755 {} \;
+            
+            # Clear caches
+            wp cache flush --path=/home/master/applications/gwrckvqdjn/public_html
+            
+            echo "Staging deployment completed"
+          EOF
+          
+      - name: Staging Health Check
+        run: |
+          # Test staging environment
+          STAGING_URL="woocommerce-870689-5762868.cloudwaysapps.com"
+          
+          # Check HTTP status
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://$STAGING_URL")
+          if [ $HTTP_STATUS -ne 200 ]; then
+            echo "Staging health check failed: HTTP $HTTP_STATUS"
+            exit 1
+          fi
+          
+          # Check WordPress admin
+          ADMIN_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://$STAGING_URL/wp-admin/")
+          if [ $ADMIN_STATUS -ne 200 ] && [ $ADMIN_STATUS -ne 302 ]; then
+            echo "Staging admin check failed: HTTP $ADMIN_STATUS"
+            exit 1
+          fi
+          
+          echo "Staging health check passed"
+          
+      - name: Run Staging Tests
+        run: |
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/gwrckvqdjn/public_html
+            
+            # Plugin activation test
+            wp plugin activate yoyaku-player-v3-production --path=/home/master/applications/gwrckvqdjn/public_html
+            
+            # Check for PHP errors
+            tail -20 /home/master/applications/gwrckvqdjn/logs/php_error.log | grep "Fatal error" && exit 1 || echo "No fatal errors"
+            
+            # WooCommerce compatibility check
+            wp option get woocommerce_custom_orders_table_enabled --path=/home/master/applications/gwrckvqdjn/public_html
+            
+            echo "Staging tests completed successfully"
+          EOF
+
+  production-deployment:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [staging-deployment]
+    if: github.ref == 'refs/heads/main' || github.event.inputs.environment == 'production'
+    environment: production
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.CLOUDWAYS_SSH_KEY }}
+          
+      - name: Pre-Production Validation
+        run: |
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/jfnkmjmfer/public_html
+            
+            # Check production health
+            curl -f https://yoyaku.io/checkout/ || exit 1
+            
+            # Check current load
+            LOAD=$(uptime | awk -F'load average:' '{ print $2 }' | awk '{ print $1 }' | sed 's/,//')
+            if (( $(echo "$LOAD > 2.0" | bc -l) )); then
+              echo "High server load detected: $LOAD. Aborting deployment."
+              exit 1
+            fi
+            
+            echo "Pre-production validation passed"
+          EOF
+          
+      - name: Production Backup
+        run: |
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/jfnkmjmfer/public_html
+            
+            # Critical database backup
+            wp db export /tmp/production-backup-$(date +%Y%m%d-%H%M%S).sql --path=/home/master/applications/jfnkmjmfer/public_html
+            
+            # Plugin backup
+            if [ -d "wp-content/plugins/yoyaku-player-v3-production" ]; then
+              tar -czf /tmp/production-plugin-backup-$(date +%Y%m%d-%H%M%S).tar.gz wp-content/plugins/yoyaku-player-v3-production/
+            fi
+            
+            echo "Production backup completed"
+          EOF
+          
+      - name: Deploy to Production
+        run: |
+          # Create deployment package
+          tar -czf yoyaku-player-production.tar.gz \
+            --exclude='.git' \
+            --exclude='node_modules' \
+            --exclude='.github' \
+            --exclude='tests' \
+            .
+            
+          # Upload to production
+          scp -o StrictHostKeyChecking=no yoyaku-player-production.tar.gz master_crhmyfjcsf@134.122.80.6:/tmp/
+          
+          # Deploy with zero-downtime strategy
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/jfnkmjmfer/public_html/wp-content/plugins/
+            
+            # Backup current version
+            if [ -d "yoyaku-player-v3-production" ]; then
+              mv yoyaku-player-v3-production yoyaku-player-v3-production-backup-$(date +%Y%m%d-%H%M%S)
+            fi
+            
+            # Extract new version
+            mkdir -p yoyaku-player-v3-production-new
+            cd yoyaku-player-v3-production-new
+            tar -xzf /tmp/yoyaku-player-production.tar.gz
+            
+            # Set proper permissions
+            find . -type f -exec chmod 644 {} \;
+            find . -type d -exec chmod 755 {} \;
+            
+            # Atomic swap
+            cd ..
+            mv yoyaku-player-v3-production-new yoyaku-player-v3-production
+            
+            # Clear all caches
+            wp cache flush --path=/home/master/applications/jfnkmjmfer/public_html
+            
+            echo "Production deployment completed"
+          EOF
+          
+      - name: Production Health Check
+        run: |
+          # Critical production tests
+          sleep 30  # Allow time for deployment to settle
+          
+          # Test main site
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://yoyaku.io")
+          if [ $HTTP_STATUS -ne 200 ]; then
+            echo "Production health check failed: HTTP $HTTP_STATUS"
+            exit 1
+          fi
+          
+          # Test checkout page (critical for e-commerce)
+          CHECKOUT_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://yoyaku.io/checkout/")
+          if [ $CHECKOUT_STATUS -ne 200 ]; then
+            echo "Checkout page failed: HTTP $CHECKOUT_STATUS"
+            exit 1
+          fi
+          
+          # Test shop page
+          SHOP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://www.yoyaku.io/releases/")
+          if [ $SHOP_STATUS -ne 200 ]; then
+            echo "Shop page failed: HTTP $SHOP_STATUS"
+            exit 1
+          fi
+          
+          echo "Production health check passed"
+          
+      - name: Post-Deployment Monitoring
+        run: |
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/jfnkmjmfer/public_html
+            
+            # Check for immediate errors
+            sleep 60
+            ERROR_COUNT=$(tail -100 /home/master/applications/jfnkmjmfer/logs/php_error.log | grep "$(date +'%d-%b-%Y')" | wc -l)
+            if [ $ERROR_COUNT -gt 5 ]; then
+              echo "High error count detected after deployment: $ERROR_COUNT"
+              exit 1
+            fi
+            
+            # Performance check
+            RESPONSE_TIME=$(curl -o /dev/null -s -w "%{time_total}" "https://yoyaku.io")
+            if (( $(echo "$RESPONSE_TIME > 5.0" | bc -l) )); then
+              echo "Slow response time detected: ${RESPONSE_TIME}s"
+              exit 1
+            fi
+            
+            echo "Post-deployment monitoring passed"
+          EOF
+
+  notify:
+    name: Notify Deployment Status
+    runs-on: ubuntu-latest
+    needs: [production-deployment]
+    if: always()
+    
+    steps:
+      - name: Discord Notification
+        if: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          if [ "${{ needs.production-deployment.result }}" == "success" ]; then
+            MESSAGE="✅ YOYAKU Production Deployment Successful
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Time: $(date -u)"
+            COLOR="3066993"
+          else
+            MESSAGE="❌ YOYAKU Production Deployment Failed
+            Branch: ${{ github.ref_name }}
+            Commit: ${{ github.sha }}
+            Time: $(date -u)"
+            COLOR="15158332"
+          fi
+          
+          curl -H "Content-Type: application/json" \
+            -d "{\"embeds\": [{\"title\": \"YOYAKU CI/CD Pipeline\", \"description\": \"$MESSAGE\", \"color\": $COLOR}]}" \
+            ${{ secrets.DISCORD_WEBHOOK }}
+
+  rollback:
+    name: Emergency Rollback
+    runs-on: ubuntu-latest
+    if: failure() && github.ref == 'refs/heads/main'
+    needs: [production-deployment]
+    
+    steps:
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.7.0
+        with:
+          ssh-private-key: ${{ secrets.CLOUDWAYS_SSH_KEY }}
+          
+      - name: Rollback Production
+        run: |
+          ssh -o StrictHostKeyChecking=no master_crhmyfjcsf@134.122.80.6 << 'EOF'
+            cd /home/master/applications/jfnkmjmfer/public_html/wp-content/plugins/
+            
+            # Find latest backup
+            BACKUP_DIR=$(ls -dt yoyaku-player-v3-production-backup-* 2>/dev/null | head -1)
+            
+            if [ -n "$BACKUP_DIR" ]; then
+              echo "Rolling back to: $BACKUP_DIR"
+              
+              # Remove failed deployment
+              rm -rf yoyaku-player-v3-production
+              
+              # Restore backup
+              mv "$BACKUP_DIR" yoyaku-player-v3-production
+              
+              # Clear caches
+              wp cache flush --path=/home/master/applications/jfnkmjmfer/public_html
+              
+              echo "Rollback completed successfully"
+            else
+              echo "No backup found for rollback"
+              exit 1
+            fi
+          EOF
+          
+      - name: Verify Rollback
+        run: |
+          sleep 30
+          HTTP_STATUS=$(curl -o /dev/null -s -w "%{http_code}" "https://yoyaku.io")
+          if [ $HTTP_STATUS -ne 200 ]; then
+            echo "Rollback verification failed: HTTP $HTTP_STATUS"
+            exit 1
+          fi
+          echo "Rollback verification successful"

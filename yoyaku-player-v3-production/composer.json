@@ -1,0 +1,48 @@
+{
+    "name": "yoyaku/player-v3-production",
+    "description": "YOYAKU Player v3 Production Plugin with CI/CD Pipeline",
+    "type": "wordpress-plugin",
+    "license": "GPL-2.0-or-later",
+    "authors": [
+        {
+            "name": "YOYAKU Team",
+            "email": "ben@yoyaku.io"
+        }
+    ],
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "wp-coding-standards/wpcs": "^2.3",
+        "squizlabs/php_codesniffer": "^3.6",
+        "phpcompatibility/phpcompatibility-wp": "^2.1"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts": {
+        "phpcs": "phpcs --standard=WordPress --extensions=php --ignore=vendor/,node_modules/ .",
+        "phpcbf": "phpcbf --standard=WordPress --extensions=php --ignore=vendor/,node_modules/ .",
+        "test": "phpunit",
+        "test-coverage": "phpunit --coverage-html coverage-html",
+        "security-scan": [
+            "grep -r \"eval(\" --include=\"*.php\" . && exit 1 || echo \"No eval() found\"",
+            "grep -r \"base64_decode(\" --include=\"*.php\" . && exit 1 || echo \"No base64_decode() found\"",
+            "grep -r \"system(\" --include=\"*.php\" . && exit 1 || echo \"No system() calls found\"",
+            "grep -r \"exec(\" --include=\"*.php\" . && exit 1 || echo \"No exec() calls found\""
+        ]
+    },
+    "autoload": {
+        "psr-4": {
+            "YOYAKU\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "YOYAKU\\Tests\\": "tests/"
+        }
+    }
+}

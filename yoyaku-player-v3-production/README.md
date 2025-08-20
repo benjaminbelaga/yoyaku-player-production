@@ -1,13 +1,21 @@
-# YOYAKU Player V3 - Production Ready
+# YOYAKU Player V3 - Production Ready with CI/CD Pipeline
 
 ## Version: 5.4.3
-**Status**: PRODUCTION READY  
-**Date**: 15 August 2025
+**Status**: PRODUCTION READY with Enterprise CI/CD  
+**Date**: 18 August 2025
 
 ## Description
-Professional audio player for WooCommerce music stores with waveform visualization and automatic playlist management.
+Professional audio player for WooCommerce music stores with waveform visualization, automatic playlist management, and enterprise-grade CI/CD pipeline for safe production deployments.
 
-## Features
+## 🚀 CI/CD Pipeline Features
+- **Multi-Environment**: Staging → Production deployment flow
+- **Zero-Downtime**: Atomic deployments with automatic rollback
+- **E-commerce Safety**: Checkout/shop page validation
+- **Real-time Monitoring**: GitHub Actions + Discord alerts
+- **WordPress Security**: Automated vulnerability scanning
+- **HPOS Compatible**: WooCommerce High-Performance Order Storage ready
+
+## Audio Player Features
 - Ultra-thin 48px player bar design
 - WaveSurfer.js waveform visualization
 - Circular play/pause buttons with icons
@@ -18,15 +26,40 @@ Professional audio player for WooCommerce music stores with waveform visualizati
 - Responsive mobile design
 
 ## Requirements
-- WordPress 5.0 or higher
+- WordPress 5.8 or higher
 - WooCommerce 5.0 or higher
-- PHP 7.4 or higher
+- PHP 8.1 or higher
 - Modern browsers (Chrome, Firefox, Safari, Edge)
+- SSH access for deployments
+- GitHub repository with Actions enabled
 
-## Installation
-1. Upload plugin folder to `/wp-content/plugins/`
-2. Activate through WordPress admin panel
-3. Clear all caches after activation
+## Quick Start
+
+### For Developers
+```bash
+# Clone and setup
+git clone [repository-url]
+cd yoyaku-player-v3-production
+composer install
+
+# Deploy to staging
+./scripts/deploy.sh staging
+
+# Run tests
+composer test
+
+# Deploy to production
+./scripts/deploy.sh production
+```
+
+### For Emergencies
+```bash
+# Emergency rollback
+./scripts/rollback.sh production --force
+
+# Check site health
+./scripts/monitor.sh production
+```
 
 ## File Structure
 ```

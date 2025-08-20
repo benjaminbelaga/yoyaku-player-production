@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="YOYAKU Player v3 Test Suite">
+			<directory>./tests/</directory>
+		</testsuite>
+	</testsuites>
+	
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">./</directory>
+		</include>
+		<exclude>
+			<directory>./vendor/</directory>
+			<directory>./tests/</directory>
+			<directory>./bin/</directory>
+			<file>./yoyaku-player-v3.php</file>
+		</exclude>
+		<report>
+			<clover outputFile="coverage.xml"/>
+			<html outputDirectory="coverage-html"/>
+		</report>
+	</coverage>
+	
+	<php>
+		<const name="WP_TESTS_DOMAIN" value="example.org" />
+		<const name="WP_TESTS_EMAIL" value="admin@example.org" />
+		<const name="WP_TESTS_TITLE" value="Test Blog" />
+		<const name="WP_TESTS_FORCE_KNOWN_BUGS" value="true" />
+		<const name="WP_MEMORY_LIMIT" value="256M" />
+	</php>
+</phpunit>
