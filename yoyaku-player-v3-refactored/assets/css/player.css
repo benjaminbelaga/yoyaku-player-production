@@ -1,0 +1,1314 @@
+/* YOYAKU Player V3 ULTRA-FIN - 48px Height */
+:root {
+    --yp-bg: #1a1a1a;
+    --yp-bg-light: #2d2d2d;
+    --yp-text: #f5f5f5;
+    --yp-accent: #ffd700;
+    --yp-muted: #999999;
+}
+
+/* HIDE OLD PLAYERS - Force disable */
+.fwa-player,
+.fwaplayer,
+.audio-player,
+.jp-audio,
+.mejs-container,
+.wp-audio-shortcode {
+    display: none !important;
+    visibility: hidden !important;
+    z-index: -1 !important;
+    position: absolute !important;
+    left: -9999px !important;
+}
+
+/* Player Container - ULTRA-FIN 48px */
+.yoyaku-player-ultra-fin {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--yp-bg-light);
+    box-shadow: 0 -2px 20px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.yoyaku-player-ultra-fin.active {
+    transform: translateY(0);
+}
+
+/* Inner Container - 48px height */
+.player-inner {
+    display: flex;
+    align-items: center;
+    padding: 8px 20px;
+    gap: 15px;
+    max-width: 1400px;
+    margin: 0 auto;
+    height: 48px;
+}
+
+/* Vinyl Macaron - 40px */
+.vinyl-cover {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    position: relative;
+}
+
+.vinyl-wrapper {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    background: radial-gradient(
+        circle,
+        var(--yp-bg) 0%,
+        var(--yp-bg-light) 30%,
+        var(--yp-bg) 50%,
+        var(--yp-bg-light) 70%,
+        var(--yp-bg) 100%
+    );
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Vinyl styling - no clickable functionality */
+
+.vinyl-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    animation: spin 1.8s linear infinite;
+    animation-play-state: paused;
+}
+
+.player-playing .vinyl-image {
+    animation-play-state: running;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Playlist Dropdown - SMART ADAPTIVE WIDTH */
+.playlist-container {
+    flex-shrink: 0;
+    min-width: fit-content;
+    max-width: fit-content; /* Adapte exactement au contenu */
+    position: relative;
+    flex-grow: 0; /* NE PAS grandir, laisser espace au waveform */
+    margin-right: 15px; /* Petit espace avant waveform */
+    display: flex;
+    flex-direction: column; /* Stack metadata + track display vertically */
+    gap: 4px;
+}
+
+.playlist-toggle {
+    background: transparent;
+    border: none;
+    color: #f5f5f5;
+    padding: 4px 0;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.playlist-toggle:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.playlist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+}
+
+.product-line-1 {
+    font-size: 9px;
+    color: #f5f5f5;
+    font-weight: 500;
+}
+
+.product-line-2 {
+    font-size: 9px;
+    color: #999;
+    font-weight: 400;
+}
+
+.product-artist {
+    font-weight: 600;
+}
+
+.track-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #333;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 2px;
+    min-width: 120px;
+    font-size: 10px;
+    margin-top: 3px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.track-display:hover {
+    background: #444;
+}
+
+.current-track {
+    font-size: 10px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.track-display .dropdown-arrow {
+    font-size: 8px;
+    opacity: 0.7;
+}
+
+.track-bpm {
+    color: var(--yp-muted);
+    font-size: 10px;
+}
+
+.playlist-info .dropdown-arrow {
+    display: none;
+}
+
+.dropdown-arrow {
+    transition: transform 0.2s;
+}
+
+.playlist-container.open .dropdown-arrow {
+    transform: rotate(180deg);
+}
+
+.playlist-dropdown {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    max-height: 200px;
+    overflow-y: auto;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    transition: all 0.2s;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
+}
+
+.playlist-container.open .playlist-dropdown {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.playlist-item {
+    padding: 8px 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: background 0.2s;
+    font-size: 12px;
+    color: #333;
+    user-select: none;
+}
+
+.playlist-item * {
+    pointer-events: none;
+}
+
+.playlist-item:hover {
+    background: #f5f5f5;
+}
+
+.playlist-item.active {
+    background: #333;
+    color: #fff;
+}
+
+/* Waveform Container ULTRA-FIN - CLICKABLE */
+.waveform-container {
+    flex: 1 1 auto; /* PREND TOUT L'ESPACE DISPONIBLE */
+    background: #2d2d2d;
+    border-radius: 4px;
+    padding: 6px 12px;
+    position: relative;
+    height: 36px;
+    border: 1px solid #444;
+    min-width: 300px; /* Minimum pour être utilisable */
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.waveform-container:hover {
+    border-color: #888;
+    box-shadow: 0 0 8px rgba(136, 136, 136, 0.4);
+}
+
+.waveform-container:active {
+    border-color: #aaa;
+    box-shadow: 0 0 12px rgba(170, 170, 170, 0.6);
+}
+
+#waveform {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+/* WaveSurfer specific styling */
+#waveform wave {
+    overflow: visible !important;
+}
+
+#waveform canvas {
+    height: 24px !important;
+    cursor: pointer;
+}
+
+/* Loading state for waveform */
+.waveform-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: #666;
+    font-size: 10px;
+}
+
+.waveform-loading::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    border: 2px solid #666;
+    border-top: 2px solid #ffd700;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-left: 8px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Progress Bar Clickable */
+.html5-progress-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+}
+
+.progress-bar {
+    height: 6px !important;
+    background: rgba(255,255,255,0.2);
+    width: 100%;
+    border-radius: 3px;
+    position: relative;
+    cursor: pointer;
+    transition: height 0.2s;
+}
+
+.progress-bar:hover {
+    height: 8px !important;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #ffd700;
+    border-radius: 3px;
+    transition: width 0.1s;
+}
+
+.time-display {
+    position: absolute;
+    right: 0;
+    top: -18px;
+    font-size: 9px;
+    color: #999;
+    background: rgba(0,0,0,0.7);
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+/* Controls ULTRA-FINS */
+.player-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    color: var(--yp-text);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn.prev,
+.control-btn.next {
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+}
+    
+    .control-btn.play-pause {
+        width: 44px;
+        height: 44px;
+    }
+
+.control-btn.prev:hover,
+.control-btn.next:hover {
+    color: var(--yp-accent);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 215, 0, 0.4);
+    transform: scale(1.1);
+}
+
+.control-btn.play-pause {
+    background: rgba(255, 215, 0, 0.1) !important;
+    border-color: rgba(255, 215, 0, 0.3) !important;
+    color: #ffd700;
+}
+
+.control-btn.play-pause:hover {
+    background: rgba(255, 215, 0, 0.2) !important;
+    border-color: rgba(255, 215, 0, 0.5) !important;
+}
+
+/* START/STOP Button Technics Style */
+
+
+.control-btn.play-pause:active {
+    transform: scale(0.95);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* Audio Controls - Icon Style with Popup */
+.audio-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    min-width: 50px;
+    align-items: center;
+    justify-content: center;
+}
+
+.volume-icon,
+.pitch-icon {
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 4px;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.volume-icon:hover,
+.pitch-icon:hover {
+    color: #fff;
+}
+
+.volume-icon.active,
+.pitch-icon.active {
+    color: var(--yp-accent);
+}
+
+/* Popup containers */
+.volume-popup,
+.pitch-popup {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 8px 12px;
+    display: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    min-width: 120px;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+}
+
+.volume-icon.active .volume-popup,
+.pitch-icon.active .pitch-popup {
+    display: flex;
+}
+
+/* Horizontal sliders in popup */
+.volume-slider-horizontal,
+.pitch-slider-horizontal {
+    width: 80px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+.volume-slider-horizontal::-webkit-slider-thumb,
+.pitch-slider-horizontal::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 1px solid #666;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.pitch-slider-horizontal {
+    background: linear-gradient(to right, 
+        rgba(255, 255, 255, 0.2) 0%, 
+        rgba(255, 255, 255, 0.2) 48%, 
+        #ffd700 48%, 
+        #ffd700 52%, 
+        rgba(255, 255, 255, 0.2) 52%, 
+        rgba(255, 255, 255, 0.2) 100%);
+}
+
+.volume-value,
+.pitch-value {
+    font-size: 9px;
+    color: var(--yp-text);
+    font-weight: 600;
+    min-width: 30px;
+    text-align: center;
+}
+
+/* Cart Button - Blue like main Add to cart */
+.cart-btn {
+    background: #7db9d8;
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+.cart-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Status Indicator */
+.status-indicator {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: var(--yp-bg-light);
+    padding: 8px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--yp-accent);
+    font-size: 11px;
+    color: var(--yp-text);
+    display: none;
+    z-index: 10001;
+}
+
+.status-indicator.active {
+    display: block;
+}
+
+/* RESPONSIVE MOBILE 42px */
+@media (max-width: 768px) {
+    .player-inner {
+        padding: 6px 15px;
+        gap: 6px;
+        height: 42px;
+    }
+    
+    .vinyl-cover {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .playlist-container {
+        min-width: 160px;
+    }
+    
+    .waveform-container {
+        height: 30px;
+        padding: 4px;
+    }
+    
+    .control-btn.prev,
+    .control-btn.next {
+        font-size: 14px;
+    }
+    
+    .control-btn.play-pause {
+        width: 44px;
+        height: 44px;
+    }
+    
+    
+
+.control-btn.play-pause:active {
+    transform: scale(0.95);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+    
+    .cart-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .audio-controls {
+        min-width: 40px;
+        gap: 6px;
+    }
+    
+    .volume-icon svg,
+    .pitch-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .volume-popup,
+    .pitch-popup {
+        transform: translateX(-50%) translateY(-8px);
+        padding: 6px 10px;
+        min-width: 100px;
+    }
+    
+    .volume-slider-horizontal,
+    .pitch-slider-horizontal {
+        width: 60px;
+        height: 3px;
+    }
+    
+    .playlist-toggle {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+    
+    .playlist-item {
+        font-size: 11px;
+        padding: 6px 8px;
+    }
+}
+/* FIX TITRE: Adapter à la longueur réelle du contenu */
+.playlist-info {
+    flex: 0 1 auto !important;
+    min-width: fit-content !important;
+    max-width: none !important; /* Pas de limite, s'adapte au contenu */
+    white-space: nowrap !important; /* Empêche le wrap */
+}
+
+.product-line-1,
+.product-line-2 {
+    white-space: nowrap !important;
+    overflow: visible !important; /* JAMAIS de crop "..." */
+    text-overflow: clip !important; /* Pas d'ellipsis */
+}
+
+/* Ajuster l'espacement entre vinyl et playlist-info */
+.player-inner {
+    gap: 10px !important; /* Réduit de 15px */
+}
+
+/* PLAYLIST RESPONSIVE - 3 BREAKPOINTS */
+
+/* Desktop >700px - Dropdown sous metadata */
+@media (min-width: 701px) {
+    .yoyaku-player-ultra-fin .player-inner .track-display {
+        display: flex !important;
+        margin-top: 4px !important;
+        margin-left: 0 !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+    }
+}
+
+/* SUPPRIME - Tablet à côté posait problème */
+@media (min-width: 999px) and (max-width: 1000px) {
+    .yoyaku-player-ultra-fin .player-inner .track-display {
+        display: flex !important;
+        margin-top: 0 !important;
+        margin-left: 8px !important;
+        background: #333 !important; /* Visible sur tablet */
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-container {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+    }
+    
+    /* MASQUER PITCH CONTROL sur tablet */
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup {
+        display: none !important;
+    }
+}
+
+/* Mobile/Tablet <700px - Dropdown en dessous - SOLUTION CHEVAUCHEMENT */
+@media (max-width: 700px) {
+    /* OVERRIDE COMPLET du layout tablet */
+    .yoyaku-player-ultra-fin .player-inner {
+        display: grid !important;
+        grid-template-rows: auto auto !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        min-height: 80px !important;
+        padding: 8px !important;
+        gap: 6px !important;
+    }
+    
+    /* LIGNE 1: Vinyl + metadata + controls + cart */
+    .yoyaku-player-ultra-fin .vinyl-cover,
+    .yoyaku-player-ultra-fin .playlist-info,
+    .yoyaku-player-ultra-fin .player-controls,
+    .yoyaku-player-ultra-fin .cart-btn {
+        grid-row: 1 !important;
+    }
+    
+    /* LIGNE 2: Track display EN DESSOUS */
+    .yoyaku-player-ultra-fin .player-inner .track-display {
+        display: flex !important;
+        margin-top: 4px !important;
+        margin-left: 0 !important;
+        background: #444 !important; /* Visible sur mobile */
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-container {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+    }
+    
+    /* MASQUER PITCH CONTROL sur mobile */
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup {
+        display: none !important;
+    }
+}
+
+/* SUPPRIME TEMPORAIREMENT */
+
+/* Desktop >970px - Playlist dropdown sous metadata */
+@media (min-width: 971px) {
+    .playlist-container {
+        min-width: fit-content !important;
+        max-width: 40% !important; /* Maximum 40% pour laisser 60% au waveform */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: center !important; /* Centrer verticalement */
+        gap: 6px !important;
+    }
+    
+    .playlist-info {
+        min-width: fit-content !important;
+        max-width: none !important;
+    }
+    
+    /* REMETTRE track-display ET playlist-dropdown sur desktop */
+    .yoyaku-player-ultra-fin .track-display {
+        display: flex !important; /* Réafficher sur desktop */
+        margin-top: 4px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important; /* Réafficher dropdown sur desktop */
+    }
+    
+    .waveform-container {
+        min-width: 400px !important; /* Plus d'espace minimum sur desktop */
+    }
+    
+    /* Alignement vertical avec bouton play */
+    .player-inner {
+        align-items: center !important; /* Tout centré verticalement */
+    }
+}
+
+/* Encore plus d'espace waveform sur très larges écrans */
+@media (min-width: 1200px) {
+    .playlist-container {
+        max-width: 35% !important; /* Seulement 35% max sur grands écrans */
+    }
+    
+    .waveform-container {
+        min-width: 500px !important; /* Waveform énorme sur grands écrans */
+    }
+}
+
+/* Sur mobile, permettre le wrap si nécessaire */
+@media (max-width: 768px) {
+    .product-line-1,
+    .product-line-2 {
+        white-space: normal !important;
+        line-height: 1.3 !important;
+    }
+}
+
+/* ==============================================
+   BENJAMIN MOBILE LAYOUT V4 - 2 LIGNES OVERRIDE
+   ============================================== */
+
+@media (max-width: 768px) {
+    
+    /* OVERRIDE responsive original - BENJAMIN V4 */
+    .yoyaku-player-ultra-fin {
+        height: 120px !important;
+        transform: translateY(0) !important; /* Force visible */
+    }
+    
+    .yoyaku-player-ultra-fin.active {
+        transform: translateY(0) !important;
+    }
+    
+    .yoyaku-player-ultra-fin.mobile-layout .player-inner,
+    .yoyaku-player-ultra-fin .player-inner {
+        height: 150px !important; /* Plus de hauteur pour 3 lignes */
+        display: grid !important;
+        grid-template-rows: 50px 50px 40px !important; /* 3 lignes */
+        grid-template-columns: 45px 1fr 85px 44px !important;
+        grid-template-areas: 
+            "vinyl metadata controls cart"
+            "vinyl waveform waveform waveform"
+            "track-display track-display track-display track-display" !important;
+        gap: 2px !important;
+        padding: 5px !important;
+        align-items: center !important;
+    }
+    
+    /* VINYL - Span 2 rows left */
+    .yoyaku-player-ultra-fin .vinyl-cover {
+        grid-area: vinyl !important;
+        grid-row: 1 / 3 !important;
+        width: 50px !important;
+        height: 110px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .mobile-layout .vinyl-wrapper,
+    .yoyaku-player-ultra-fin .vinyl-wrapper {
+        width: 45px !important;
+        height: 45px !important;
+        border-radius: 50% !important;
+    }
+    
+    .mobile-layout .vinyl-image,
+    .yoyaku-player-ultra-fin .vinyl-image {
+        width: 45px !important;
+        height: 45px !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+    }
+    
+    /* LIGNE 1: Metadata */
+    .yoyaku-player-ultra-fin .playlist-container {
+        grid-area: metadata !important;
+        margin: 0 !important;
+        padding: 5px !important;
+        min-width: auto !important;
+        max-width: none !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-info {
+        padding: 0 !important;
+    }
+    
+    .yoyaku-player-ultra-fin .product-line-1 {
+        font-size: 9px !important;
+        font-weight: 600 !important;
+        color: #fff !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin-bottom: 2px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .product-line-2 {
+        font-size: 8px !important;
+        color: rgba(255,255,255,0.7) !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* LIGNE 1: Controls avec icônes SVG */
+    .yoyaku-player-ultra-fin .player-controls {
+        grid-area: controls !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        padding: 0 !important;
+    }
+    
+    /* Boutons circulaires avec vraies icônes - CERCLES PARFAITS */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+        max-width: 34px !important;
+        max-height: 34px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06)) !important;
+        border: 1px solid rgba(255,255,255,0.25) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        transition: all 0.2s ease !important;
+        font-size: 0 !important;
+        position: relative !important;
+        margin: 0 1px !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .yoyaku-player-ultra-fin .control-btn:hover,
+    .yoyaku-player-ultra-fin .control-btn:active {
+        background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0.1)) !important;
+        transform: scale(1.05) !important;
+    }
+    
+    /* Icônes SVG Data URI - PROPRES! */
+    .yoyaku-player-ultra-fin .control-btn.prev::after {
+        content: '';
+        width: 16px !important;
+        height: 16px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        display: block !important;
+    }
+    
+    .yoyaku-player-ultra-fin .control-btn.next::after {
+        content: '';
+        width: 16px !important;
+        height: 16px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        display: block !important;
+    }
+    
+    /* Play button spécial plus gros - CERCLE PARFAIT */
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        max-width: 40px !important;
+        max-height: 40px !important;
+        background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,215,0,0.1)) !important;
+        border: 1px solid rgba(255,215,0,0.4) !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
+    }
+    
+    .yoyaku-player-ultra-fin .btn-play::after {
+        content: '';
+        width: 18px !important;
+        height: 18px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M8 5v14l11-7z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        display: block !important;
+        margin-left: 2px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .btn-pause::after {
+        content: '';
+        width: 18px !important;
+        height: 18px !important;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ffd700"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>') !important;
+        background-size: contain !important;
+        background-repeat: no-repeat !important;
+        display: block !important;
+    }
+    
+    /* Masquer texte original des boutons */
+    .yoyaku-player-ultra-fin .control-btn span,
+    .yoyaku-player-ultra-fin .btn-play,
+    .yoyaku-player-ultra-fin .btn-pause {
+        color: transparent !important;
+        font-size: 0 !important;
+    }
+    
+    /* LIGNE 1: Cart button - CERCLE PARFAIT */
+    .yoyaku-player-ultra-fin .cart-btn {
+        display: flex !important; /* Override hidden original */
+        grid-area: cart !important;
+        width: 34px !important;
+        height: 34px !important;
+        min-width: 34px !important;
+        min-height: 34px !important;
+        max-width: 34px !important;
+        max-height: 34px !important;
+        border-radius: 50% !important;
+        background: rgba(125,185,216,0.8) !important; /* Blue original */
+        border: 1px solid rgba(125,185,216,0.4) !important;
+        font-size: 14px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        flex-shrink: 0 !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    /* LIGNE 2: Waveform pleine largeur */
+    .yoyaku-player-ultra-fin .waveform-container {
+        grid-area: waveform !important;
+        grid-column: 2 / -1 !important;
+        width: 100% !important;
+        height: 45px !important;
+        margin: 5px !important;
+        background: rgba(45,45,45,0.8) !important; /* Comme original */
+        border-radius: 22px !important;
+        overflow: hidden !important;
+        min-width: auto !important;
+        border: 1px solid #666 !important;
+    }
+    
+    .yoyaku-player-ultra-fin #waveform {
+        height: 100% !important;
+        width: 100% !important;
+    }
+    
+    /* AFFICHER track-display EN DESSOUS sur mobile - STYLE FINAL */
+    .yoyaku-player-ultra-fin .track-display {
+        display: flex !important;
+        grid-area: track-display !important;
+        margin: 2px 5px !important;
+        background: #333 !important; /* Gris foncé discret */
+        color: #fff !important;
+        padding: 6px 10px !important;
+        border-radius: 4px !important;
+        font-size: 10px !important;
+        font-weight: 500 !important;
+        border: 1px solid #555 !important;
+        min-height: 28px !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+    
+    /* FORCER playlist-dropdown visible aussi */
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: block !important;
+        position: static !important;
+        margin-top: 2px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .playlist-dropdown {
+        display: none !important;
+    }
+    
+    /* BENJAMIN: Masquer PITCH seulement, garder VOLUME */
+    .yoyaku-player-ultra-fin .pitch-icon,
+    .yoyaku-player-ultra-fin .pitch-popup {
+        display: none !important;
+    }
+    
+    /* Volume reste visible mais plus petit */
+    .yoyaku-player-ultra-fin .volume-icon {
+        width: 26px !important;
+        height: 26px !important;
+        font-size: 12px !important;
+    }
+    
+    /* Animation rotation vinyle */
+    @keyframes vinyl-spin-mobile {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    .yoyaku-player-ultra-fin .vinyl-wrapper.playing {
+        animation: vinyl-spin-mobile 2s linear infinite !important;
+    }
+    
+    /* Optimisations performance mobile */
+    .yoyaku-player-ultra-fin .vinyl-wrapper {
+        will-change: transform !important;
+        transform: translateZ(0) !important;
+    }
+    
+    /* Touch optimizations */
+    .yoyaku-player-ultra-fin .control-btn {
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+    }
+}
+
+/* Fallback icônes si SVG ne charge pas */
+@supports not (background-image: url('data:image/svg+xml;utf8,')) {
+    @media (max-width: 768px) {
+        .yoyaku-player-ultra-fin .control-btn.prev::after {
+            content: "⏮" !important;
+            background-image: none !important;
+            font-size: 12px !important;
+            color: white !important;
+        }
+        
+        .yoyaku-player-ultra-fin .control-btn.next::after {
+            content: "⏭" !important;
+            background-image: none !important;
+            font-size: 12px !important;
+            color: white !important;
+        }
+        
+        .yoyaku-player-ultra-fin .btn-play::after {
+            content: "▶" !important;
+            background-image: none !important;
+            font-size: 14px !important;
+            color: #ffd700 !important;
+        }
+        
+        .yoyaku-player-ultra-fin .btn-pause::after {
+            content: "⏸" !important;
+            background-image: none !important;
+            font-size: 14px !important;
+            color: #ffd700 !important;
+        }
+    }
+}
+
+/* Body padding ajusté pour mobile Benjamin */
+@media (max-width: 768px) {
+    body {
+        padding-bottom: 150px !important; /* Ajusté pour player plus haut */
+    }
+}
+
+/* Body padding desktop */
+@media (min-width: 769px) {
+    body {
+        padding-bottom: 48px !important;
+    }
+}
+
+/* ==============================================
+   FIX SPÉCIFIQUE GALAXY S8+ (360px)
+   ============================================== */
+@media (max-width: 360px) {
+    .yoyaku-player-ultra-fin .player-inner {
+        grid-template-columns: 40px 1fr 68px 42px !important;
+        /* 40+68+42 = 150px fixes = 210px pour waveform sur 360px */
+    }
+    
+    /* Ajustements boutons pour Galaxy S8+ */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+        max-width: 26px !important;
+        max-height: 26px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        min-height: 30px !important;
+        max-width: 30px !important;
+        max-height: 30px !important;
+    }
+}
+
+/* ==============================================
+   FIX SPÉCIFIQUE IPHONE SE (375px)
+   ============================================== */
+@media (min-width: 361px) and (max-width: 375px) {
+    .yoyaku-player-ultra-fin .player-inner {
+        grid-template-columns: 40px 1fr 66px 44px !important;
+        /* 40+66+44 = 150px fixes = 225px pour waveform sur 375px */
+        /* Cart button 44px pour ne pas être cropé */
+    }
+    
+    /* Boutons plus compacts pour iPhone SE */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        min-height: 26px !important;
+        max-width: 26px !important;
+        max-height: 26px !important;
+        margin: 0 !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 30px !important;
+        min-height: 30px !important;
+        max-width: 30px !important;
+        max-height: 30px !important;
+    }
+}
+
+/* ==============================================
+   FIX SPÉCIFIQUE IPHONE 12 PRO (390px)
+   ============================================== */
+@media (min-width: 376px) and (max-width: 390px) {
+    .yoyaku-player-ultra-fin .player-inner {
+        grid-template-columns: 41px 1fr 70px 42px !important;
+        /* 41+70+42 = 153px fixes = 237px pour waveform sur 390px */
+    }
+    
+    /* Boutons légèrement plus petits pour gagner de l'espace */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 27px !important;
+        height: 27px !important;
+        min-width: 27px !important;
+        min-height: 27px !important;
+        max-width: 27px !important;
+        max-height: 27px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 31px !important;
+        height: 31px !important;
+        min-width: 31px !important;
+        min-height: 31px !important;
+        max-width: 31px !important;
+        max-height: 31px !important;
+    }
+}
+
+/* ==============================================
+   ULTRA-RESPONSIVE - TRÈS PETITS ÉCRANS
+   ============================================== */
+
+@media (min-width: 391px) and (max-width: 480px) {
+    /* Player encore plus compact */
+    .yoyaku-player-ultra-fin .player-inner {
+        padding: 3px !important;
+        grid-template-columns: 42px 1fr 75px 44px !important;
+    }
+    
+    /* Vinyl plus petit */
+    .yoyaku-player-ultra-fin .vinyl-cover {
+        width: 40px !important;
+        height: 100px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .vinyl-wrapper {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .vinyl-image {
+        width: 38px !important;
+        height: 38px !important;
+    }
+    
+    /* Boutons plus petits */
+    .yoyaku-player-ultra-fin .control-btn {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        max-width: 28px !important;
+        max-height: 28px !important;
+        gap: 2px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .play-pause {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .cart-btn {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        min-height: 28px !important;
+        max-width: 28px !important;
+        max-height: 28px !important;
+        font-size: 12px !important;
+    }
+    
+    /* Polices encore plus petites */
+    .yoyaku-player-ultra-fin .product-line-1 {
+        font-size: 8px !important;
+        margin-bottom: 1px !important;
+    }
+    
+    .yoyaku-player-ultra-fin .product-line-2 {
+        font-size: 7px !important;
+    }
+    
+    /* Volume plus petit */
+    .yoyaku-player-ultra-fin .volume-icon {
+        width: 22px !important;
+        height: 22px !important;
+    }
+    
+    /* Controls plus serrés */
+    .yoyaku-player-ultra-fin .player-controls {
+        gap: 1px !important;
+    }
+}
